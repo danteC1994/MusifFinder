@@ -33,7 +33,7 @@ struct Artist: Codable, Identifiable {
     let userData: UserData
     let uri: String
     let title: String
-    let thumb: String
+    let thumb: String?
     let coverImage: String
     let resourceURL: String
     

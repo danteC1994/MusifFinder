@@ -18,40 +18,75 @@ struct HomeView: View {
         NavigationStack {
             VStack {
                 if showEmptyState {
-                    Text("Search for an artist")
-                        .font(.headline)
-                        .padding()
+                    emptyState
                 } else {
-                    List(viewModel.artists) { artist in
-                        NavigationLink(destination: ArtistDetailView(artist: artist)) {
-                            Text("\(artist.title)")
-                                .onAppear {
-                                    if artist.id == viewModel.artists.last?.id {
-                                        Task {
-                                            await viewModel.loadMoreArtists(query: searchText)
-                                        }
-                                    }
-                                }
-                        }
-                    }
+                    listView(viewModel.artists)
                 }
             }
             .searchable(text: $searchText, prompt: "Artist Name")
             .onChange(of: searchText) { _, newValue in
-                if !newValue.isEmpty {
-                    Task {
-                        await viewModel.fetchArtists(query: newValue)
-                        showEmptyState = false
-                    }
-                } else {
-                    artists = []
-                    showEmptyState = true
-                }
+                requestArtistIfNeeded(newValue)
             }
+            .padding()
             .navigationTitle("Discogs Music Finder")
         }
-        .task {
-            await viewModel.fetchArtists(query: "")
+    }
+
+    private var emptyState: some View {
+        VStack {
+            Image(systemName: "magnifyingglass.circle.fill")
+                .resizable()
+                .scaledToFit()
+                .foregroundColor(.gray)
+                .frame(width: 100, height: 100)
+                .padding()
+            Text("Search for an artist")
+                .font(.headline)
+                .foregroundColor(.gray)
+                .padding()
+            Text("Use the search bar above to find artists by name.")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+    }
+
+    private func listView(_ artists: [Artist]) -> some View {
+        List(viewModel.artists) { artist in
+            NavigationLink(destination: ArtistDetailView(artist: artist)) {
+                HStack {
+                    AsyncImageView(url: URL(string: artist.thumb ?? "") , viewModel: viewModel)
+                    VStack(alignment: .leading) {
+                        Text(artist.title)
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        Text(artist.type.capitalized)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.leading, 5)
+                }
+                .onAppear {
+                    if artist.id == viewModel.artists.last?.id {
+                        Task {
+                            await viewModel.loadMoreArtists(query: searchText)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func requestArtistIfNeeded(_ newSearchValue: String) {
+        if !newSearchValue.isEmpty {
+            Task {
+                await viewModel.fetchArtists(query: newSearchValue)
+                showEmptyState = false
+            }
+        } else {
+            artists = []
+            showEmptyState = true
         }
     }
 }
