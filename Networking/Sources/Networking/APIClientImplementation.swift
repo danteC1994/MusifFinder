@@ -7,11 +7,16 @@
 
 import Foundation
 
-class APIClientImplementation: APIClient {
+public class APIClientImplementation: APIClient {
     private let baseURL: URL
+    private let authorization: String
+    private let userAgent: String
 
-    init(baseURL: URL) {
+    public init(baseURL: URL, authorization: String? = nil, userAgent: String? = nil) {
         self.baseURL = baseURL
+        self.authorization = authorization ?? "Discogs token=aroChhXXzTTJQRrjQghirwbxFpuWyPxEEDDjYbbf"
+        self.userAgent = userAgent ?? "DiscogsMusicFinder/1.0 +http://www.discogsmusicfinder.com"
+        ["Authorization": "Discogs token=aroChhXXzTTJQRrjQghirwbxFpuWyPxEEDDjYbbf", "User-Agent": "DiscogsMusicFinder/1.0 +http://www.discogsmusicfinder.com"]
     }
 
     private func buildURL(endpoint: Endpoint, queryItems: [String: String]?) -> URL? {
@@ -24,19 +29,20 @@ class APIClientImplementation: APIClient {
         return urlComponents.url
     }
 
-    func get<T: Decodable>(endpoint: Endpoint, queryItems: [String: String]? = nil, headers: [String: String]? = ["Authorization": "Discogs token=aroChhXXzTTJQRrjQghirwbxFpuWyPxEEDDjYbbf", "User-Agent": "DiscogsMusicFinder/1.0 +http://www.discogsmusicfinder.com"]) async throws -> T {
+    public func get<T: Decodable>(endpoint: Endpoint, queryItems: [String: String]? = nil, headers: [String: String]? = nil) async throws -> T {
         guard let url = buildURL(endpoint: endpoint, queryItems: queryItems) else {
             throw APIError.invalidURL
         }
 
         var request = URLRequest(url: url)
         request.httpMethod = "GET"
-
-        if let headers = headers {
-            for (key, value) in headers {
-                request.setValue(value, forHTTPHeaderField: key)
-            }
+        var headers = headers ?? [:]
+        headers["Authorization"] = authorization
+        headers["User-Agent"] = userAgent
+        for (key, value) in headers {
+            request.setValue(value, forHTTPHeaderField: key)
         }
+        
 
         let (data, _) = try await URLSession.shared.data(for: request)
 
@@ -48,7 +54,7 @@ class APIClientImplementation: APIClient {
         }
     }
 
-    func post<T: Decodable, U: Encodable>(endpoint: Endpoint, body: U, queryItems: [String: String]? = nil, headers: [String: String]? = ["Authorization": "Discogs token=aroChhXXzTTJQRrjQghirwbxFpuWyPxEEDDjYbbf", "User-Agent": "DiscogsMusicFinder/1.0 +http://www.discogsmusicfinder.com"]) async throws -> T {
+    public func post<T: Decodable, U: Encodable>(endpoint: Endpoint, body: U, queryItems: [String: String]? = nil, headers: [String: String]? = ["Authorization": "Discogs token=aroChhXXzTTJQRrjQghirwbxFpuWyPxEEDDjYbbf", "User-Agent": "DiscogsMusicFinder/1.0 +http://www.discogsmusicfinder.com"]) async throws -> T {
         guard let url = buildURL(endpoint: endpoint, queryItems: queryItems) else {
             throw APIError.invalidURL
         }
@@ -57,10 +63,11 @@ class APIClientImplementation: APIClient {
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        if let headers = headers {
-            for (key, value) in headers {
-                request.setValue(value, forHTTPHeaderField: key)
-            }
+        var headers = headers ?? [:]
+        headers["Authorization"] = authorization
+        headers["User-Agent"] = userAgent
+        for (key, value) in headers {
+            request.setValue(value, forHTTPHeaderField: key)
         }
 
         do {

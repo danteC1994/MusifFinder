@@ -5,7 +5,7 @@
 //  Created by dante canizo on 10/12/2024.
 //
 
-enum APIError: Error {
+public enum APIError: Error {
     case invalidURL
     case networkError(String)
     case decodingError(Error)

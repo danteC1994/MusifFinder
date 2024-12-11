@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Endpoint {
+public enum Endpoint {
     case search
     case paginatedEndpoint(String)
 
