@@ -24,16 +24,24 @@ struct HomeView: View {
                 } else {
                     List(viewModel.artists) { artist in
                         NavigationLink(destination: ArtistDetailView(artist: artist)) {
-                            Text("navigate")
+                            Text("\(artist.title)")
+                                .onAppear {
+                                    if artist.id == viewModel.artists.last?.id {
+                                        Task {
+                                            await viewModel.loadMoreArtists(query: searchText)
+                                        }
+                                    }
+                                }
                         }
                     }
                 }
             }
             .searchable(text: $searchText, prompt: "Artist Name")
-            .onChange(of: searchText) { newValue in
+            .onChange(of: searchText) { _, newValue in
                 if !newValue.isEmpty {
                     Task {
                         await viewModel.fetchArtists(query: newValue)
+                        showEmptyState = false
                     }
                 } else {
                     artists = []

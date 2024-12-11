@@ -19,25 +19,29 @@ final class HomeViewModel: ObservableObject {
 
     func fetchArtists(query: String) async {
         do {
-            let artists = try await repository.searchArtists(query: query)
+            let artists = try await repository.searchArtists(query: query, pageSize: 30)
             await MainActor.run {
                 self.artists = artists
             }
         } catch {
-            self.error = true
-            print("Error fetching artists: \(error)")
+            await MainActor.run {
+                self.error = true
+                print("Error fetching artists: \(error)")
+            }
         }
     }
 
-    func loadMoreSrtists() async {
+    func loadMoreArtists(query: String) async {
         do {
-            let artists = try await repository.loadNextPage()
+            let artists = try await repository.loadNextPage(query: query, pageSize: 30)
             await MainActor.run {
                 self.artists = artists
             }
         } catch {
-            self.error = true
-            print("Error fetching artists: \(error)")
+            await MainActor.run {
+                self.error = true
+                print("Error fetching artists: \(error)")
+            }
         }
     }
 }

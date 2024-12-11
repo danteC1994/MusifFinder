@@ -6,7 +6,6 @@
 //
 
 protocol SearchRepository {
-    func searchArtists(query: String) async throws -> [Artist]
-    func loadNextPage() async throws -> [Artist]
-    func updateNextPage(with stringURL: String?)
+    func searchArtists(query: String, pageSize: Int) async throws -> [Artist]
+    func loadNextPage(query: String, pageSize: Int) async throws -> [Artist]
 }

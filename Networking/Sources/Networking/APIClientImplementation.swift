@@ -20,6 +20,19 @@ public class APIClientImplementation: APIClient {
     }
 
     private func buildURL(endpoint: Endpoint, queryItems: [String: String]?) -> URL? {
+        if case let .paginatedEndpoint(string) = endpoint,
+           let fullURL = endpoint.urlString.removingPercentEncoding,
+           let components = URLComponents(string: fullURL)  {
+             var newComponents = components
+             if let queryItems = queryItems {
+                 var existingQueryItems = newComponents.queryItems ?? []
+                 for (key, value) in queryItems {
+                     existingQueryItems.append(URLQueryItem(name: key, value: value))
+                 }
+                 newComponents.queryItems = existingQueryItems
+             }
+             return newComponents.url
+        }
         guard var urlComponents = URLComponents(url: baseURL.appendingPathComponent(endpoint.urlString), resolvingAgainstBaseURL: false) else {
             return nil
         }
