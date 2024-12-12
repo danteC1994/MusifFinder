@@ -15,7 +15,7 @@ public enum Endpoint {
     var urlString: String {
         switch self {
         case .search: return "database/search"
-        case .artist(let id): return "database/search\(id)"
+        case .artist(let id): return "artists/\(id)"
         case .paginatedEndpoint(let path): return path
         }
     }
