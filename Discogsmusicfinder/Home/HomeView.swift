@@ -27,7 +27,6 @@ struct HomeView: View {
             .onChange(of: searchText) { _, newValue in
                 requestArtistIfNeeded(newValue)
             }
-            .padding()
             .navigationTitle("Discogs Music Finder")
         }
     }
@@ -53,28 +52,63 @@ struct HomeView: View {
     }
 
     private func listView(_ artists: [Artist]) -> some View {
-        List(viewModel.artists) { artist in
-            NavigationLink(destination: ArtistDetailView(artist: artist, artistViewModel: .init(imageRepository: ImageRepositoryImplementation()))) {
-                HStack {
-                    AsyncImageView(url: URL(string: artist.thumb ?? ""), fetcher: viewModel )
-                    VStack(alignment: .leading) {
-                        Text(artist.title)
-                            .font(.headline)
-                            .foregroundColor(.primary)
-                        Text(artist.type.capitalized)
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
+        ScrollView {
+            LazyVStack {
+                ForEach(viewModel.artists) { artist in
+                    NavigationLink(
+                        destination: ArtistDetailView(
+                            artist: artist,
+                            artistViewModel: .init(imageRepository: viewModel.imageRepository)
+                        )
+                    ) {
+                        artistCell(artist)
                     }
-                    .padding(.leading, 5)
-                }
-                .onAppear {
-                    if artist.id == viewModel.artists.last?.id {
-                        Task {
-                            await viewModel.loadMoreArtists(query: searchText)
+                    .onAppear {
+                        if artist.id == viewModel.artists.last?.id {
+                            Task {
+                                await viewModel.loadMoreArtists(query: searchText)
+                            }
                         }
                     }
+                    .padding(.horizontal)
                 }
             }
+            .listRowInsets(EdgeInsets())
+        }
+    }
+
+    private func artistCell(_ artist: Artist) -> some View {
+        NavigationLink(destination: ArtistDetailView(artist: artist, artistViewModel: .init(imageRepository: ImageRepositoryImplementation()))) {
+            HStack {
+                artistRowImage(artist)
+                    .clipShape(Circle())
+                    .frame(width: 50, height: 50)
+                artistRowDescription(artist)
+                    .padding(.leading, 6)
+                Spacer()
+            }
+            .padding(.all, 6)
+            .background(RoundedRectangle(cornerRadius: 10)
+                .fill(Color(UIColor.systemBackground))
+                .shadow(radius: 2))
+
+        }
+    }
+
+    private func artistRowImage(_ artist: Artist) -> some View {
+        ZStack {
+            AsyncImageView(url: URL(string: artist.thumb ?? ""), fetcher: viewModel)
+        }
+    }
+
+    private func artistRowDescription(_ artist: Artist) -> some View {
+        VStack(alignment: .leading) {
+            Text(artist.title)
+                .font(.headline)
+                .foregroundColor(.primary)
+            Text(artist.type.capitalized)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
         }
     }
 
@@ -94,19 +128,6 @@ struct HomeView: View {
 #Preview {
     HomeView(viewModel: .init(searchRepository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!)), imageRepository: ImageRepositoryImplementation()))
 }
-
-//struct ArtistDetailView: View {
-//    let artist: Artist
-//    
-//    var body: some View {
-//        VStack(alignment: .leading) {
-//            Text(artist.title)
-//                .font(.largeTitle)
-//            NavigationLink("View Albums", destination: AlbumsView(artist: artist))
-//        }
-//        .navigationTitle(artist.title)
-//    }
-//}
 
 struct AlbumsView: View {
     let artist: Artist

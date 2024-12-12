@@ -12,7 +12,7 @@ final class HomeViewModel: ObservableObject {
     @Published var error: Bool = false
 
     private let searchRepository: SearchRepository
-    private let imageRepository: ImageRepository
+    private(set) var imageRepository: ImageRepository
 
     init(searchRepository: SearchRepository, imageRepository: ImageRepository) {
         self.searchRepository = searchRepository

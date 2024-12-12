@@ -27,7 +27,6 @@ struct AsyncImageView: View {
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-                    .frame(width: 50, height: 50)
                     .clipped()
             } else if isLoading {
                 ProgressView()
