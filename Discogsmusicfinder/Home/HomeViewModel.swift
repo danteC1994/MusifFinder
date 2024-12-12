@@ -10,17 +10,18 @@ final class HomeViewModel: ObservableObject {
     @Published var artists = [Artist]()
     @Published var isLoading: Bool = false
     @Published var error: Bool = false
-    @Published var imageCache: [String: Image] = [:]
 
-    private let repository: SearchRepository
+    private let searchRepository: SearchRepository
+    private let imageRepository: ImageRepository
 
-    init(repository: SearchRepository) {
-        self.repository = repository
+    init(searchRepository: SearchRepository, imageRepository: ImageRepository) {
+        self.searchRepository = searchRepository
+        self.imageRepository = imageRepository
     }
 
     func fetchArtists(query: String) async {
         do {
-            let artists = try await repository.searchArtists(query: query, pageSize: 30)
+            let artists = try await searchRepository.searchArtists(query: query, pageSize: 30)
             await MainActor.run {
                 self.artists = artists
             }
@@ -34,7 +35,7 @@ final class HomeViewModel: ObservableObject {
 
     func loadMoreArtists(query: String) async {
         do {
-            let artists = try await repository.loadNextPage(query: query, pageSize: 30)
+            let artists = try await searchRepository.loadNextPage(query: query, pageSize: 30)
             await MainActor.run {
                 self.artists = artists
             }
@@ -45,33 +46,10 @@ final class HomeViewModel: ObservableObject {
             }
         }
     }
+}
 
+extension HomeViewModel: AsyncImageFetcher {
     func fetchImage(for url: String) async -> Image? {
-        if let cachedImage = imageCache[url] {
-            return cachedImage
-        }
-
-        guard let imageUrl = URL(string: url) else {
-            return nil
-        }
-
-        do {
-            let (data, response) = try await URLSession.shared.data(from: imageUrl)
-            guard (response as? HTTPURLResponse)?.statusCode == 200 else {
-                return nil
-            }
-            if let uiImage = UIImage(data: data) {
-                let image = Image(uiImage: uiImage)
-                await MainActor.run {
-                    imageCache[url] = image
-                }
-                return image
-            }
-        } catch {
-            print("Error fetching image: \(error)")
-        }
-
-        return nil
+        await imageRepository.fetchImage(for: url)
     }
-
 }

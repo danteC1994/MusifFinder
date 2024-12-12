@@ -54,9 +54,9 @@ struct HomeView: View {
 
     private func listView(_ artists: [Artist]) -> some View {
         List(viewModel.artists) { artist in
-            NavigationLink(destination: ArtistDetailView(artist: artist)) {
+            NavigationLink(destination: ArtistDetailView(artist: artist, artistViewModel: .init(imageRepository: ImageRepositoryImplementation()))) {
                 HStack {
-                    AsyncImageView(url: URL(string: artist.thumb ?? "") , viewModel: viewModel)
+                    AsyncImageView(url: URL(string: artist.thumb ?? ""), fetcher: viewModel )
                     VStack(alignment: .leading) {
                         Text(artist.title)
                             .font(.headline)
@@ -92,21 +92,21 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(viewModel: .init(repository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!))))
+    HomeView(viewModel: .init(searchRepository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!)), imageRepository: ImageRepositoryImplementation()))
 }
 
-struct ArtistDetailView: View {
-    let artist: Artist
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(artist.title)
-                .font(.largeTitle)
-            NavigationLink("View Albums", destination: AlbumsView(artist: artist))
-        }
-        .navigationTitle(artist.title)
-    }
-}
+//struct ArtistDetailView: View {
+//    let artist: Artist
+//    
+//    var body: some View {
+//        VStack(alignment: .leading) {
+//            Text(artist.title)
+//                .font(.largeTitle)
+//            NavigationLink("View Albums", destination: AlbumsView(artist: artist))
+//        }
+//        .navigationTitle(artist.title)
+//    }
+//}
 
 struct AlbumsView: View {
     let artist: Artist
