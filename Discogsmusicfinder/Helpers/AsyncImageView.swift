@@ -12,12 +12,12 @@ struct AsyncImageView: View {
     let url: URL?
     @State private var image: Image? = nil
     @State private var isLoading = true
-    private let viewModel: HomeViewModel
+    private let fetcher: AsyncImageFetcher
     private let placeholder: Image
 
-    init(url: URL?, viewModel: HomeViewModel, placeholder: Image = Image(systemName: "photo")) {
+    init(url: URL?, fetcher: AsyncImageFetcher, placeholder: Image = Image(systemName: "photo")) {
         self.url = url
-        self.viewModel = viewModel
+        self.fetcher = fetcher
         self.placeholder = placeholder
     }
 
@@ -28,7 +28,7 @@ struct AsyncImageView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .frame(width: 50, height: 50)
-                    .cornerRadius(5)
+                    .clipped()
             } else if isLoading {
                 ProgressView()
                     .frame(width: 50, height: 50)
@@ -46,14 +46,14 @@ struct AsyncImageView: View {
     }
 
     private func loadImage() {
-        guard let url = url else {
-            image = nil
+        guard let url = url?.absoluteString else {
+            image = placeholder
             isLoading = false
             return
         }
-        
+
         Task {
-            if let fetchedImage = await viewModel.fetchImage(for: url.absoluteString) {
+            if let fetchedImage = await fetcher.fetchImage(for: url) {
                 withAnimation {
                     image = fetchedImage
                 }
@@ -66,5 +66,11 @@ struct AsyncImageView: View {
 }
 
 #Preview {
-    AsyncImageView(url: URL(filePath: ""), viewModel: .init(repository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")))))
+    AsyncImageView(url: URL(filePath: ""), fetcher: MockImageFetcher())
+}
+
+fileprivate struct MockImageFetcher: AsyncImageFetcher {
+    func fetchImage(for url: String) async -> Image? {
+        nil
+    }
 }
