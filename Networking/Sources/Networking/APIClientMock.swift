@@ -16,20 +16,24 @@ final class APIClientMock: APIClient {
         case .search:
             fatalError("not supported")
         case let .paginatedEndpoint(nextResult):
-            fatalError("Pagination not supported")
+            fatalError("not supported")
         case .artist(_):
-            fatalError("Pagination not supported")
+            fatalError("not supported")
+        case .artistReleases(_):
+            fatalError("not supported")
         }
     }
 
     func post<T, U>(endpoint: Endpoint, body: U, queryItems: [String : String]?, headers: [String : String]?) async throws -> T where T : Decodable, U : Encodable {
         switch endpoint {
         case .search:
-            fatalError("Method not allowed")
+            fatalError("not supported")
         case .paginatedEndpoint(_):
-            fatalError("Method not allowed")
+            fatalError("not supported")
         case .artist(_):
-            fatalError("Pagination not supported")
+            fatalError("not supported")
+        case .artistReleases(_):
+            fatalError("not supported")
         }
     }
 }
