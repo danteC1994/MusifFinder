@@ -17,6 +17,8 @@ final class APIClientMock: APIClient {
             fatalError("not supported")
         case let .paginatedEndpoint(nextResult):
             fatalError("Pagination not supported")
+        case .artist(_):
+            fatalError("Pagination not supported")
         }
     }
 
@@ -26,6 +28,8 @@ final class APIClientMock: APIClient {
             fatalError("Method not allowed")
         case .paginatedEndpoint(_):
             fatalError("Method not allowed")
+        case .artist(_):
+            fatalError("Pagination not supported")
         }
     }
 }
