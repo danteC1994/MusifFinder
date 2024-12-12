@@ -9,8 +9,8 @@ import SwiftUI
 
 class ArtistDetailsViewModel: ObservableObject {
     @Published private(set) var artist: Artist?
-    private let imageRepository: ImageRepository
-    private let artistRepository: ArtistRepository
+    private(set) var imageRepository: ImageRepository
+    private(set) var artistRepository: ArtistRepository
     private let artistID: Int
 
     init(artistID: Int, imageRepository: ImageRepository, artistRepository: ArtistRepository) {

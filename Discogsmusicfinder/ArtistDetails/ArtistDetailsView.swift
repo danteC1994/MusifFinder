@@ -11,7 +11,7 @@ struct ArtistDetailView: View {
     @StateObject var viewModel: ArtistDetailsViewModel
 
     var body: some View {
-        if let artist = viewModel.artist {
+         if let artist = viewModel.artist {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(artist.namevariations?.first ?? artist.profile)
@@ -31,24 +31,31 @@ struct ArtistDetailView: View {
                         .font(.body)
                         .padding(.bottom)
                     
-                    NavigationLink("View Albums", destination: AlbumsView(artist: artist))
-                        .font(.headline)
-                        .padding(.bottom)
+                    NavigationLink("View Albums", destination: AlbumsView(
+                        viewModel: .init(
+                            artistID: artist.id,
+                            imageRepository: viewModel.imageRepository,
+                            artistRepository: viewModel.artistRepository
+                        )
+                    )
+                    )
+                    .font(.headline)
+                    .padding(.bottom)
                     
                     if let members = viewModel.artist?.members {
                         Text("Band Members")
                             .font(.title2)
                             .padding(.vertical)
                         
-//                        ForEach(members, id: \.id) { member in
-//                            HStack {
-//                                NavigationLink(destination: ArtistDetailView(artist: member)) {
-//                                    Text(member.name)
-//                                        .font(.headline)
-//                                        .padding(.vertical, 5)
-//                                }
-//                            }
-//                        }
+                        ForEach(members, id: \.id) { member in
+                            HStack {
+                                NavigationLink(destination: ArtistDetailView(viewModel: .init(artistID: member.id, imageRepository: viewModel.imageRepository, artistRepository: viewModel.artistRepository))) {
+                                    Text(member.name)
+                                        .font(.headline)
+                                        .padding(.vertical, 5)
+                                }
+                            }
+                        }
                     }
                     
                     if let urls = artist.urls, !urls.isEmpty {
