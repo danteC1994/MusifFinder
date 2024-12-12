@@ -8,73 +8,68 @@
 import SwiftUI
 
 struct ArtistDetailView: View {
-    let artist: Artist
-    @StateObject var artistViewModel: ArtistDetailsViewModel
+    @StateObject var viewModel: ArtistDetailsViewModel
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 10) {
-                // Artist title
-                Text(artist.title)
+                Text(viewModel.artist.namevariations?.first ?? viewModel.artist.profile)
                     .font(.largeTitle)
                     .padding(.vertical)
 
-                // Display cover image if available
-                if let coverImageURL = URL(string: artist.coverImage), !artist.coverImage.isEmpty {
-                    AsyncImageView(url: coverImageURL, fetcher: artistViewModel) // Passing the URL and view model
-                        
-                        .scaledToFit()
-                        .frame(height: 200)
-                        .cornerRadius(10)
-                        .padding(.bottom) // Adding some space below the image
+                if let primaryImage = viewModel.artist.images.first(where: { $0.type == "primary" }) {
+                    AsyncImageView(url: URL(string: primaryImage.uri), fetcher: viewModel)
+//                        .resizable()
+//                        .scaledToFit()
+//                        .frame(height: 200)
+//                        .cornerRadius(10)
+//                        .padding(.bottom)
                 }
 
-                // Navigation link to albums
-                NavigationLink("View Albums", destination: AlbumsView(artist: artist))
+                Text(viewModel.artist.profile)
+                    .font(.body)
+                    .padding(.bottom)
+
+                NavigationLink("View Albums", destination: AlbumsView(artist: viewModel.artist))
                     .font(.headline)
                     .padding(.bottom)
 
-                // Check if the artist has members (for bands)
                 if hasBandMembers {
                     Text("Band Members")
                         .font(.title2)
                         .padding(.vertical)
 
-                    // Show band members here
-                    ForEach(bandMembers, id: \.id) { member in
-                        Text(member.title) // Display the name of each band member
-                            .font(.headline)
-                            .padding(.vertical, 5)
+                    ForEach(viewModel.artist.members, id: \.id) { member in
+//                        HStack {
+//                            NavigationLink(destination: ArtistDetailView(artist: member)) {
+//                                Text(member.name)
+//                                    .font(.headline)
+//                                    .padding(.vertical, 5)
+//                            }
+//                        }
                     }
                 }
 
-                // Additional information section (if any)
-                Text("Artist Type: \(artist.type.capitalized)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                if !viewModel.artist.urls.isEmpty {
+                    Text("More Information:")
+                        .font(.title2)
+                        .padding(.vertical)
 
-                // Example additional detail
-                Text("URI: \(artist.uri)")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                    ForEach(viewModel.artist.urls, id: \.self) { url in
+                        Link(url, destination: URL(string: url)!)
+                            .padding(.vertical, 5)
+                            .font(.subheadline)
+                            .foregroundColor(.blue)
+                    }
+                }
             }
             .padding()
         }
-        .navigationTitle(artist.title) // Title set to artist's name
+        .navigationTitle(viewModel.artist.namevariations?.first ?? viewModel.artist.profile)
     }
-
-    // Check if the artist is a band
+    
     private var hasBandMembers: Bool {
-        return artist.type.lowercased() == "band" // Adjust based on your logic
-    }
-
-    // Placeholder for getting band members, adjust according to your data source
-    private var bandMembers: [Artist] {
-        // This is a placeholder; replace with actual logic to retrieve band members if the artist is a band
-        return [
-            Artist(id: 1, type: "member", userData: UserData(inWantlist: false, inCollection: false), uri: "", title: "Member 1", thumb: "", coverImage: "", resourceURL: ""),
-            Artist(id: 2, type: "member", userData: UserData(inWantlist: false, inCollection: false), uri: "", title: "Member 2", thumb: "", coverImage: "", resourceURL: "")
-        ]
+        return !viewModel.artist.members.isEmpty
     }
 }
 
