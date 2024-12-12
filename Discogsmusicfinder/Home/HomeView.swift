@@ -74,7 +74,8 @@ struct HomeView: View {
         NavigationLink(
             destination: ArtistDetailView(viewModel: .init(
                 artistID: artist.id,
-                imageRepository: ImageRepositoryImplementation()
+                imageRepository: ImageRepositoryImplementation(),
+                artistRepository: ArtistRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "https://api.discogs.com")))
             )
             )
         ) {

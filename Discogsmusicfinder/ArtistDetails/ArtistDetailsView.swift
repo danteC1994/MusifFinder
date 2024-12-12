@@ -11,65 +11,71 @@ struct ArtistDetailView: View {
     @StateObject var viewModel: ArtistDetailsViewModel
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 10) {
-                Text(viewModel.artist.namevariations?.first ?? viewModel.artist.profile)
-                    .font(.largeTitle)
-                    .padding(.vertical)
-
-                if let primaryImage = viewModel.artist.images.first(where: { $0.type == "primary" }) {
-                    AsyncImageView(url: URL(string: primaryImage.uri), fetcher: viewModel)
-//                        .resizable()
-//                        .scaledToFit()
-//                        .frame(height: 200)
-//                        .cornerRadius(10)
-//                        .padding(.bottom)
-                }
-
-                Text(viewModel.artist.profile)
-                    .font(.body)
-                    .padding(.bottom)
-
-                NavigationLink("View Albums", destination: AlbumsView(artist: viewModel.artist))
-                    .font(.headline)
-                    .padding(.bottom)
-
-                if hasBandMembers {
-                    Text("Band Members")
-                        .font(.title2)
+        if let artist = viewModel.artist {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(artist.namevariations?.first ?? artist.profile)
+                        .font(.largeTitle)
                         .padding(.vertical)
-
-                    ForEach(viewModel.artist.members, id: \.id) { member in
-//                        HStack {
-//                            NavigationLink(destination: ArtistDetailView(artist: member)) {
-//                                Text(member.name)
-//                                    .font(.headline)
-//                                    .padding(.vertical, 5)
+                    
+                    if let primaryImage = artist.images.first(where: { $0.type == "primary" }) {
+                        AsyncImageView(url: URL(string: primaryImage.uri), fetcher: viewModel)
+                        //                        .resizable()
+                        //                        .scaledToFit()
+                        //                        .frame(height: 200)
+                        //                        .cornerRadius(10)
+                        //                        .padding(.bottom)
+                    }
+                    
+                    Text(artist.profile)
+                        .font(.body)
+                        .padding(.bottom)
+                    
+                    NavigationLink("View Albums", destination: AlbumsView(artist: artist))
+                        .font(.headline)
+                        .padding(.bottom)
+                    
+                    if let members = viewModel.artist?.members {
+                        Text("Band Members")
+                            .font(.title2)
+                            .padding(.vertical)
+                        
+//                        ForEach(members, id: \.id) { member in
+//                            HStack {
+//                                NavigationLink(destination: ArtistDetailView(artist: member)) {
+//                                    Text(member.name)
+//                                        .font(.headline)
+//                                        .padding(.vertical, 5)
+//                                }
 //                            }
 //                        }
                     }
-                }
-
-                if !viewModel.artist.urls.isEmpty {
-                    Text("More Information:")
-                        .font(.title2)
-                        .padding(.vertical)
-
-                    ForEach(viewModel.artist.urls, id: \.self) { url in
-                        Link(url, destination: URL(string: url)!)
-                            .padding(.vertical, 5)
-                            .font(.subheadline)
-                            .foregroundColor(.blue)
+                    
+                    if let urls = artist.urls, !urls.isEmpty {
+                        Text("More Information:")
+                            .font(.title2)
+                            .padding(.vertical)
+                        
+                        ForEach(urls, id: \.self) { urlString in
+                            if let url = URL(string: urlString) {
+                                Link(urlString, destination: url)
+                                    .padding(.vertical, 5)
+                                    .font(.subheadline)
+                                    .foregroundColor(.blue)
+                            }
+                        }
                     }
                 }
+                .padding()
             }
-            .padding()
+            .navigationTitle(artist.namevariations?.first ?? artist.profile)
+        } else {
+            ProgressView()
+                .frame(width: 50, height: 50)
+                .task {
+                    await viewModel.fetchArtist()
+                }
         }
-        .navigationTitle(viewModel.artist.namevariations?.first ?? viewModel.artist.profile)
-    }
-    
-    private var hasBandMembers: Bool {
-        return !viewModel.artist.members.isEmpty
     }
 }
 
