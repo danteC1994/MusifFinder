@@ -12,12 +12,12 @@ struct Artist: Codable, Identifiable {
     let namevariations: [String]?
     let profile: String
     let releasesURL: String
-    let resourceURL: String
+    let resourceURL: String?
     let uri: String
-    let urls: [String]
+    let urls: [String]?
     let dataQuality: String
     let images: [ArtistImage]
-    let members: [Member]
+    let members: [Member]?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -35,16 +35,25 @@ struct Artist: Codable, Identifiable {
 
 struct ArtistImage: Codable {
     let height: Int
-    let resourceURL: String
+    let resourceURL: String?
     let type: String
     let uri: String
     let uri150: String
     let width: Int
+
+    enum CodingKeys: String, CodingKey {
+        case height
+        case resourceURL = "resource_url"
+        case type
+        case uri
+        case uri150
+        case width
+    }
 }
 
 struct Member: Codable, Identifiable {
     let id: Int
     let name: String
-    let resourceURL: String
+    let resourceURL: String?
     let active: Bool
 }
