@@ -7,7 +7,7 @@
 import SwiftUI
 
 final class HomeViewModel: ObservableObject {
-    @Published var artists = [Artist]()
+    @Published var searchResults = [SearchResult]()
     @Published var isLoading: Bool = false
     @Published var error: Bool = false
 
@@ -21,9 +21,9 @@ final class HomeViewModel: ObservableObject {
 
     func fetchArtists(query: String) async {
         do {
-            let artists = try await searchRepository.searchArtists(query: query, pageSize: 30)
+            let searchResults = try await searchRepository.searchArtists(query: query, pageSize: 30)
             await MainActor.run {
-                self.artists = artists
+                self.searchResults = searchResults
             }
         } catch {
             await MainActor.run {
@@ -35,9 +35,9 @@ final class HomeViewModel: ObservableObject {
 
     func loadMoreArtists(query: String) async {
         do {
-            let artists = try await searchRepository.loadNextPage(query: query, pageSize: 30)
+            let searchResults = try await searchRepository.loadNextPage(query: query, pageSize: 30)
             await MainActor.run {
-                self.artists = artists
+                self.searchResults = searchResults
             }
         } catch {
             await MainActor.run {

@@ -11,7 +11,7 @@ import Networking
 struct HomeView: View {
     @StateObject var viewModel: HomeViewModel
     @State private var searchText = ""
-    @State private var artists: [Artist] = []
+    @State private var artists: [SearchResult] = []
     @State private var showEmptyState = true
 
     var body: some View {
@@ -20,7 +20,7 @@ struct HomeView: View {
                 if showEmptyState {
                     emptyState
                 } else {
-                    listView(viewModel.artists)
+                    listView(viewModel.searchResults)
                 }
             }
             .searchable(text: $searchText, prompt: "Artist Name")
@@ -51,20 +51,13 @@ struct HomeView: View {
         }
     }
 
-    private func listView(_ artists: [Artist]) -> some View {
+    private func listView(_ searchResults: [SearchResult]) -> some View {
         ScrollView {
             LazyVStack {
-                ForEach(viewModel.artists) { artist in
-                    NavigationLink(
-                        destination: ArtistDetailView(
-                            artist: artist,
-                            artistViewModel: .init(imageRepository: viewModel.imageRepository)
-                        )
-                    ) {
-                        artistCell(artist)
-                    }
+                ForEach(viewModel.searchResults) { artist in
+                    artistCell(artist)
                     .onAppear {
-                        if artist.id == viewModel.artists.last?.id {
+                        if artist.id == viewModel.searchResults.last?.id {
                             Task {
                                 await viewModel.loadMoreArtists(query: searchText)
                             }
@@ -77,8 +70,14 @@ struct HomeView: View {
         }
     }
 
-    private func artistCell(_ artist: Artist) -> some View {
-        NavigationLink(destination: ArtistDetailView(artist: artist, artistViewModel: .init(imageRepository: ImageRepositoryImplementation()))) {
+    private func artistCell(_ artist: SearchResult) -> some View {
+        NavigationLink(
+            destination: ArtistDetailView(viewModel: .init(
+                artistID: artist.id,
+                imageRepository: ImageRepositoryImplementation()
+            )
+            )
+        ) {
             HStack {
                 artistRowImage(artist)
                     .clipShape(Circle())
@@ -95,13 +94,13 @@ struct HomeView: View {
         }
     }
 
-    private func artistRowImage(_ artist: Artist) -> some View {
+    private func artistRowImage(_ artist: SearchResult) -> some View {
         ZStack {
             AsyncImageView(url: URL(string: artist.thumb ?? ""), fetcher: viewModel)
         }
     }
 
-    private func artistRowDescription(_ artist: Artist) -> some View {
+    private func artistRowDescription(_ artist: SearchResult) -> some View {
         VStack(alignment: .leading) {
             Text(artist.title)
                 .font(.headline)
