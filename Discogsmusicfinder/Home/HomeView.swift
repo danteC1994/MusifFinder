@@ -128,11 +128,3 @@ struct HomeView: View {
 #Preview {
     HomeView(viewModel: .init(searchRepository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!)), imageRepository: ImageRepositoryImplementation()))
 }
-
-struct AlbumsView: View {
-    let artist: Artist
-
-    var body: some View {
-        Text("")
-    }
-}
