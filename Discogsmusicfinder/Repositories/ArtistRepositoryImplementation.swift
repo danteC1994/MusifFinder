@@ -18,8 +18,8 @@ final class ArtistRepositoryImplementation: ArtistRepository {
         return artist
     }
 
-    func fetchAlbums(artistID: String) async throws -> Album {
-        let album: Album = try await apiClient.get(endpoint: .artistReleases(artistID), queryItems: nil, headers: nil)
-        return album
+    func fetchAlbums(artistID: String) async throws -> [Album] {
+        let album: AlbumResponse = try await apiClient.get(endpoint: .artistReleases(artistID), queryItems: nil, headers: nil)
+        return album.releases
     }
 }
