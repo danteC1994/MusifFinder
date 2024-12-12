@@ -12,7 +12,18 @@ import Networking
 struct DiscogsmusicfinderApp: App {
     var body: some Scene {
         WindowGroup {
-            HomeView(viewModel: .init(repository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "https://api.discogs.com")))))
+            HomeView(
+                viewModel: .init(
+                    searchRepository: SearchRepositoryImplementation(
+                        apiClient: APIClientImplementation(
+                            baseURL: URL(
+                                filePath: "https://api.discogs.com"
+                            )
+                        )
+                    ),
+                    imageRepository: ImageRepositoryImplementation()
+                )
+            )
         }
     }
 }
