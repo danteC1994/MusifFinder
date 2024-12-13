@@ -80,35 +80,14 @@ struct HomeView: View {
             )
             .environmentObject(router)
         ) {
-            HStack {
-                artistRowImage(artist)
-                    .clipShape(Circle())
-                    .frame(width: 50, height: 50)
-                artistRowDescription(artist)
-                    .padding(.leading, 6)
-                Spacer()
-            }
-            .padding(.all, 6)
-            .background(RoundedRectangle(cornerRadius: 10)
-                .fill(Color(UIColor.systemBackground))
-                .shadow(radius: 2))
-        }
-    }
-
-    private func artistRowImage(_ artist: SearchResult) -> some View {
-        ZStack {
-            AsyncImageView(url: URL(string: artist.thumb ?? ""), fetcher: viewModel.imageManager)
-        }
-    }
-
-    private func artistRowDescription(_ artist: SearchResult) -> some View {
-        VStack(alignment: .leading) {
-            Text(artist.title)
-                .font(.headline)
-                .foregroundColor(.primary)
-            Text(artist.type.capitalized)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+            GenericCellView(
+                viewData: .init(
+                    imageManager: viewModel.imageManager,
+                    imageURLString: artist.thumb,
+                    title: artist.title,
+                    subtitle: artist.type.capitalized
+                )
+            )
         }
     }
 

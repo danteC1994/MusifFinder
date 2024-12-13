@@ -11,49 +11,15 @@ import Networking
 struct AlbumsView: View {
     @EnvironmentObject var router: Router
     @StateObject var viewModel: AlbumsViewModel
-    @State private var selectedYear: String = ""
-    @State private var selectedGenre: String = ""
-    @State private var selectedLabel: String = ""
     
     var body: some View {
         VStack {
             filterSection
-
             if let albums = viewModel.albums {
-                ScrollView {
-                    LazyVStack {
-                        ForEach(albums) { album in
-                            HStack {
-                                NavigationLink(destination: router.push(route: .albumDetails(album: album))) {
-                                    HStack {
-                                        if let thumb = album.thumb {
-                                            AsyncImageView(url: URL(string: thumb), fetcher: viewModel.imageManager)
-                                                .frame(width: 50, height: 50)
-                                                .cornerRadius(5)
-                                        }
-                                        
-                                        VStack(alignment: .leading) {
-                                            Text(album.title)
-                                                .font(.headline)
-                                            Text("Released: \(album.year ?? 0)")
-                                                .font(.subheadline)
-                                                .foregroundColor(.secondary)
-                                        }
-                                    }
-                                    .padding(.vertical, 5)
-                                }
-                                Spacer()
-                            }
-                            .padding(.horizontal)
-                            Divider()
-                        }
-                    }
-                }
+                albumList(albums)
                 
             } else {
-                Text("No albums found for this artist.")
-                    .font(.headline)
-                    .padding()
+                emptyState
             }
         }
         .navigationTitle("Albums")
@@ -86,6 +52,45 @@ struct AlbumsView: View {
                 .cornerRadius(20)
                 .foregroundColor(.primary)
         }
+    }
+
+    private func albumList(_ albums: [Album]) -> some View {
+        ScrollView {
+            LazyVStack {
+                ForEach(albums) { album in
+                    HStack {
+                        albumCell(album)
+                    }
+                    .padding(.horizontal)
+                }
+            }
+            .listRowInsets(EdgeInsets())
+        }
+    }
+
+    private func albumCell(_ album: Album) -> some View {
+        NavigationLink(
+            destination: router.push(
+                route: .albumDetails(
+                    album: album
+                )
+            )
+        ) {
+            GenericCellView(
+                viewData: .init(
+                    imageManager: viewModel.imageManager,
+                    imageURLString: album.thumb,
+                    title: album.title,
+                    subtitle: "Released: \(album.year ?? 0)"
+                )
+            )
+        }
+    }
+
+    private var emptyState: some View {
+        Text("No albums found for this artist.")
+            .font(.headline)
+            .padding()
     }
 }
 
