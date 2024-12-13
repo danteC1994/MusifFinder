@@ -9,7 +9,7 @@ import SwiftUI
 import Networking
 
 struct AlbumsView: View {
-    @ObservedObject var router: Router
+    @EnvironmentObject var router: Router
     @StateObject var viewModel: AlbumsViewModel
     @State private var selectedYear: String = ""
     @State private var selectedGenre: String = ""

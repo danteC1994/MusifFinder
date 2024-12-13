@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ArtistDetailView: View {
-    @ObservedObject var router: Router
+    @EnvironmentObject var router: Router
     @StateObject var viewModel: ArtistDetailsViewModel
 
     var body: some View {
@@ -32,7 +32,14 @@ struct ArtistDetailView: View {
                         .font(.body)
                         .padding(.bottom)
                     
-                    NavigationLink("View Albums", destination: router.push(route: .albumsList(artistID: artist.id))
+                    NavigationLink(
+                        "View Albums",
+                        destination: router.push(
+                            route: .albumsList(
+                                artistID: artist.id
+                            )
+                        )
+                        .environmentObject(router)
                     )
                     .font(.headline)
                     .padding(.bottom)
@@ -44,7 +51,14 @@ struct ArtistDetailView: View {
                         
                         ForEach(members, id: \.id) { member in
                             HStack {
-                                NavigationLink(destination: router.push(route: .artistDetail(artistID: member.id))) {
+                                NavigationLink(
+                                    destination: router.push(
+                                        route: .artistDetail(
+                                            artistID: member.id
+                                        )
+                                    )
+                                    .environmentObject(router)
+                                ) {
                                     Text(member.name)
                                         .font(.headline)
                                         .padding(.vertical, 5)

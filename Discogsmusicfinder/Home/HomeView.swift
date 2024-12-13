@@ -9,7 +9,7 @@ import SwiftUI
 import Networking
 
 struct HomeView: View {
-    @ObservedObject var router: Router
+    @EnvironmentObject var router: Router
     @StateObject var viewModel: HomeViewModel
     @State private var searchText = ""
     @State private var artists: [SearchResult] = []
@@ -73,7 +73,12 @@ struct HomeView: View {
 
     private func artistCell(_ artist: SearchResult) -> some View {
         NavigationLink(
-            destination: router.push(route: .artistDetail(artistID: artist.id))
+            destination: router.push(
+                route: .artistDetail(
+                    artistID: artist.id
+                )
+            )
+            .environmentObject(router)
         ) {
             HStack {
                 artistRowImage(artist)

@@ -64,19 +64,18 @@ struct ViewFactory {
     func createView(for route: Route, on router: Router) -> some View {
         switch route {
         case .homeView:
-            makeHomeView(router: router)
+            makeHomeView()
         case .artistDetail(artistID: let artistID):
-            makeArtistDetailsView(router: router, artistID: artistID)
+            makeArtistDetailsView(artistID: artistID)
         case .albumsList(artistID: let artistID):
-            makeAlbumList(router: router, artistID: artistID)
+            makeAlbumList(artistID: artistID)
         case .albumDetails(album: let album):
             makeAlbumDetails(album: album)
         }
     }
     
-    func makeHomeView(router: Router) -> HomeView {
+    func makeHomeView() -> HomeView {
         return HomeView(
-            router: router,
             viewModel: .init(
                 searchRepository: SearchRepositoryImplementation(
                     apiClient: apiClient
@@ -86,9 +85,8 @@ struct ViewFactory {
         )
     }
 
-    func makeArtistDetailsView(router: Router, artistID: Int) -> ArtistDetailView  {
+    func makeArtistDetailsView(artistID: Int) -> ArtistDetailView  {
         ArtistDetailView(
-            router: router,
             viewModel: .init(
                 artistID: artistID,
                 imageManager: imageManager,
@@ -97,9 +95,8 @@ struct ViewFactory {
         )
     }
 
-    func makeAlbumList(router: Router, artistID: Int) -> AlbumsView {
+    func makeAlbumList(artistID: Int) -> AlbumsView {
         AlbumsView(
-            router: router,
             viewModel: .init(
                 artistID: artistID,
                 imageManager: imageManager,

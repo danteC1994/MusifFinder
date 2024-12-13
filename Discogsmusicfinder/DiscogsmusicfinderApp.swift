@@ -10,12 +10,13 @@ import Networking
 
 @main
 struct DiscogsmusicfinderApp: App {
-    @ObservedObject var router = Router(viewFactory: .init(imageRepository: ImageRepositoryImplementation()))
+    @StateObject private var router = Router(viewFactory: .init(imageRepository: ImageRepositoryImplementation()))
 
     var body: some Scene {
         WindowGroup {
             NavigationStack {
                 router.push(route: .homeView)
+                    .environmentObject(router)
             }
         }
     }
