@@ -11,9 +11,9 @@ final class AlbumsViewModel: ObservableObject {
     @Published private(set) var albums: [Album]?
     @Published var currentSort: SortField = .year
     
-    private let imageRepository: ImageRepository
     private let artistRepository: ArtistRepository
     private let artistID: Int
+    private(set) var imageManager: AsyncImageFetcher
     
 
     enum SortField: String {
@@ -27,8 +27,8 @@ final class AlbumsViewModel: ObservableObject {
         case desc
     }
 
-    init(artistID: Int, imageRepository: ImageRepository, artistRepository: ArtistRepository) {
-        self.imageRepository = imageRepository
+    init(artistID: Int, imageManager: AsyncImageFetcher, artistRepository: ArtistRepository) {
+        self.imageManager = imageManager
         self.artistRepository = artistRepository
         self.artistID = artistID
     }
@@ -46,11 +46,5 @@ final class AlbumsViewModel: ObservableObject {
         } catch {
             print("Error fetching albums: \(error)")
         }
-    }
-}
-
-extension AlbumsViewModel: AsyncImageFetcher {
-    func fetchImage(for url: String) async -> Image? {
-        await imageRepository.fetchImage(for: url)
     }
 }

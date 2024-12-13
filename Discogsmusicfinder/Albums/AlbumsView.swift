@@ -9,6 +9,7 @@ import SwiftUI
 import Networking
 
 struct AlbumsView: View {
+    @ObservedObject var router: Router
     @StateObject var viewModel: AlbumsViewModel
     @State private var selectedYear: String = ""
     @State private var selectedGenre: String = ""
@@ -23,10 +24,10 @@ struct AlbumsView: View {
                     LazyVStack {
                         ForEach(albums) { album in
                             HStack {
-                                NavigationLink(destination: AlbumDetailsView(album: album, imageFetcher: viewModel)) {
+                                NavigationLink(destination: router.push(route: .albumDetails(album: album))) {
                                     HStack {
                                         if let thumb = album.thumb {
-                                            AsyncImageView(url: URL(string: thumb), fetcher: viewModel)
+                                            AsyncImageView(url: URL(string: thumb), fetcher: viewModel.imageManager)
                                                 .frame(width: 50, height: 50)
                                                 .cornerRadius(5)
                                         }
@@ -89,7 +90,7 @@ struct AlbumsView: View {
 }
 
 #Preview {
-    NavigationStack {
-        AlbumsView(viewModel: .init(artistID: 1435265, imageRepository: ImageRepositoryImplementation(), artistRepository: ArtistRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "https://api.discogs.com")))))
-    }
+//    NavigationStack {
+//        AlbumsView(viewModel: .init(artistID: 1435265, imageRepository: ImageRepositoryImplementation(), artistRepository: ArtistRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "https://api.discogs.com")))))
+//    }
 }

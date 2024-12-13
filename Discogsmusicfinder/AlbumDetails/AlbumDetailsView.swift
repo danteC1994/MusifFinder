@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AlbumDetailsView: View {
     let album: Album
-    let imageFetcher: AsyncImageFetcher
+    let imageManager: AsyncImageFetcher
 
     var body: some View {
         ScrollView {
@@ -23,7 +23,7 @@ struct AlbumDetailsView: View {
                     .padding(.bottom)
 
                 if let thumb = album.thumb,let  coverImageUrl = URL(string: thumb), !thumb.isEmpty {
-                    AsyncImageView(url: coverImageUrl, fetcher: imageFetcher)
+                    AsyncImageView(url: coverImageUrl, fetcher: imageManager)
 //                        .resizable()
 //                        .scaledToFit()
 //                        .frame(height: 200)

@@ -32,16 +32,10 @@ struct ArtistDetailView: View {
                         .font(.body)
                         .padding(.bottom)
                     
-//                    NavigationLink("View Albums", destination: AlbumsView(
-//                        viewModel: .init(
-//                            artistID: artist.id,
-//                            imageRepository: viewModel.imageRepository,
-//                            artistRepository: viewModel.artistRepository
-//                        )
-//                    )
-//                    )
-//                    .font(.headline)
-//                    .padding(.bottom)
+                    NavigationLink("View Albums", destination: router.push(route: .albumsList(artistID: artist.id))
+                    )
+                    .font(.headline)
+                    .padding(.bottom)
                     
                     if let members = viewModel.artist?.members {
                         Text("Band Members")

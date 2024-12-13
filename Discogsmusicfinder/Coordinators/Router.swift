@@ -11,6 +11,8 @@ import SwiftUI
 enum Route {
     case homeView
     case artistDetail(artistID: Int)
+    case albumsList(artistID: Int)
+    case albumDetails(album: Album)
 }
 
 class Router: ObservableObject {
@@ -65,6 +67,10 @@ struct ViewFactory {
             makeHomeView(router: router)
         case .artistDetail(artistID: let artistID):
             makeArtistDetailsView(router: router, artistID: artistID)
+        case .albumsList(artistID: let artistID):
+            makeAlbumList(router: router, artistID: artistID)
+        case .albumDetails(album: let album):
+            makeAlbumDetails(album: album)
         }
     }
     
@@ -91,11 +97,18 @@ struct ViewFactory {
         )
     }
 
-    func makeAlbumList() {
-        
+    func makeAlbumList(router: Router, artistID: Int) -> AlbumsView {
+        AlbumsView(
+            router: router,
+            viewModel: .init(
+                artistID: artistID,
+                imageManager: imageManager,
+                artistRepository: ArtistRepositoryImplementation(apiClient: apiClient)
+            )
+        )
     }
 
-    func makeAlbumDetails() {
-        
+    func makeAlbumDetails(album: Album) -> AlbumDetailsView {
+        AlbumDetailsView(album: album, imageManager: imageManager)
     }
 }
