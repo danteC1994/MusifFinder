@@ -73,12 +73,7 @@ struct HomeView: View {
 
     private func artistCell(_ artist: SearchResult) -> some View {
         NavigationLink(
-            destination: ArtistDetailView(viewModel: .init(
-                artistID: artist.id,
-                imageRepository: ImageRepositoryImplementation(),
-                artistRepository: ArtistRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "https://api.discogs.com")))
-            )
-            )
+            destination: router.push(route: .artistDetail(artistID: artist.id))
         ) {
             HStack {
                 artistRowImage(artist)
@@ -92,13 +87,12 @@ struct HomeView: View {
             .background(RoundedRectangle(cornerRadius: 10)
                 .fill(Color(UIColor.systemBackground))
                 .shadow(radius: 2))
-
         }
     }
 
     private func artistRowImage(_ artist: SearchResult) -> some View {
         ZStack {
-            AsyncImageView(url: URL(string: artist.thumb ?? ""), fetcher: viewModel)
+            AsyncImageView(url: URL(string: artist.thumb ?? ""), fetcher: viewModel.imageManager)
         }
     }
 
@@ -127,5 +121,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(router: Router(), viewModel: .init(searchRepository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!)), imageRepository: ImageRepositoryImplementation()))
+//    HomeView(router: Router(), viewModel: .init(searchRepository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!)), imageManager: ImageManager(imageRepository: ImageRepositoryImplementation as! ImageRepository)))
 }

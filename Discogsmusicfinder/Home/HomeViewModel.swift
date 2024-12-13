@@ -12,11 +12,11 @@ final class HomeViewModel: ObservableObject {
     @Published var error: Bool = false
 
     private let searchRepository: SearchRepository
-    private(set) var imageRepository: ImageRepository
+    private(set) var imageManager: AsyncImageFetcher
 
-    init(searchRepository: SearchRepository, imageRepository: ImageRepository) {
+    init(searchRepository: SearchRepository, imageManager: AsyncImageFetcher) {
         self.searchRepository = searchRepository
-        self.imageRepository = imageRepository
+        self.imageManager = imageManager
     }
 
     func fetchArtists(query: String) async {
@@ -45,11 +45,5 @@ final class HomeViewModel: ObservableObject {
                 print("Error fetching artists: \(error)")
             }
         }
-    }
-}
-
-extension HomeViewModel: AsyncImageFetcher {
-    func fetchImage(for url: String) async -> Image? {
-        await imageRepository.fetchImage(for: url)
     }
 }
