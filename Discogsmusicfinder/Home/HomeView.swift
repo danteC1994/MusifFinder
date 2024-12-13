@@ -9,6 +9,7 @@ import SwiftUI
 import Networking
 
 struct HomeView: View {
+    @ObservedObject var router: Router
     @StateObject var viewModel: HomeViewModel
     @State private var searchText = ""
     @State private var artists: [SearchResult] = []
@@ -126,5 +127,5 @@ struct HomeView: View {
 }
 
 #Preview {
-    HomeView(viewModel: .init(searchRepository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!)), imageRepository: ImageRepositoryImplementation()))
+    HomeView(router: Router(), viewModel: .init(searchRepository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!)), imageRepository: ImageRepositoryImplementation()))
 }

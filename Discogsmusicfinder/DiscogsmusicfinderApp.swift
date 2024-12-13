@@ -10,20 +10,20 @@ import Networking
 
 @main
 struct DiscogsmusicfinderApp: App {
+    @ObservedObject var router = Router()
+
     var body: some Scene {
         WindowGroup {
-            HomeView(
-                viewModel: .init(
-                    searchRepository: SearchRepositoryImplementation(
-                        apiClient: APIClientImplementation(
-                            baseURL: URL(
-                                filePath: "https://api.discogs.com"
-                            )
-                        )
-                    ),
-                    imageRepository: ImageRepositoryImplementation()
-                )
-            )
+            NavigationStack {
+                if let homeView = router.currentView {
+                    homeView
+                } else {
+                    ProgressView()
+                        .onAppear {
+                            router.showHomeView()
+                        }
+                }
+            }
         }
     }
 }

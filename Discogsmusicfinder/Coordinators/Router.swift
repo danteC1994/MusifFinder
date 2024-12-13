@@ -8,23 +8,6 @@
 import Networking
 import SwiftUI
 
-//final class AppCoordinator {
-//    func start() -> some View {
-//        HomeView(
-//            viewModel: .init(
-//                searchRepository: SearchRepositoryImplementation(
-//                    apiClient: APIClientImplementation(
-//                        baseURL: URL(
-//                            filePath: "https://api.discogs.com"
-//                        )
-//                    )
-//                ),
-//                imageRepository: ImageRepositoryImplementation()
-//            )
-//        )
-//    }
-//}
-
 final class Router: ObservableObject {
     private var viewFactory = ViewFactory()
     @Published var currentView: AnyView?
