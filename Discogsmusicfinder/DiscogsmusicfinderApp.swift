@@ -10,19 +10,12 @@ import Networking
 
 @main
 struct DiscogsmusicfinderApp: App {
-    @ObservedObject var router = Router()
+    @ObservedObject var router = Router(viewFactory: .init(imageRepository: ImageRepositoryImplementation()))
 
     var body: some Scene {
         WindowGroup {
             NavigationStack {
-                if let homeView = router.currentView {
-                    homeView
-                } else {
-                    ProgressView()
-                        .onAppear {
-                            router.showHomeView()
-                        }
-                }
+                router.push(route: .homeView)
             }
         }
     }

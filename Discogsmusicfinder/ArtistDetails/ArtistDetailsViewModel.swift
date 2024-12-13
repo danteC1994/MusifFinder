@@ -9,12 +9,12 @@ import SwiftUI
 
 class ArtistDetailsViewModel: ObservableObject {
     @Published private(set) var artist: Artist?
-    private(set) var imageRepository: ImageRepository
+    private(set) var imageManager: AsyncImageFetcher
     private(set) var artistRepository: ArtistRepository
     private let artistID: Int
 
-    init(artistID: Int, imageRepository: ImageRepository, artistRepository: ArtistRepository) {
-        self.imageRepository = imageRepository
+    init(artistID: Int, imageManager: AsyncImageFetcher, artistRepository: ArtistRepository) {
+        self.imageManager = imageManager
         self.artistRepository = artistRepository
         self.artistID = artistID
     }
@@ -28,11 +28,5 @@ class ArtistDetailsViewModel: ObservableObject {
         } catch {
             
         }
-    }
-}
-
-extension ArtistDetailsViewModel: AsyncImageFetcher {
-    func fetchImage(for url: String) async -> Image? {
-        await imageRepository.fetchImage(for: url)
     }
 }

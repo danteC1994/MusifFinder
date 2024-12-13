@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ArtistDetailView: View {
+    @ObservedObject var router: Router
     @StateObject var viewModel: ArtistDetailsViewModel
 
     var body: some View {
@@ -19,7 +20,7 @@ struct ArtistDetailView: View {
                         .padding(.vertical)
                     
                     if let primaryImage = artist.images.first(where: { $0.type == "primary" }) {
-                        AsyncImageView(url: URL(string: primaryImage.uri), fetcher: viewModel)
+                        AsyncImageView(url: URL(string: primaryImage.uri), fetcher: viewModel.imageManager)
                         //                        .resizable()
                         //                        .scaledToFit()
                         //                        .frame(height: 200)
@@ -31,16 +32,16 @@ struct ArtistDetailView: View {
                         .font(.body)
                         .padding(.bottom)
                     
-                    NavigationLink("View Albums", destination: AlbumsView(
-                        viewModel: .init(
-                            artistID: artist.id,
-                            imageRepository: viewModel.imageRepository,
-                            artistRepository: viewModel.artistRepository
-                        )
-                    )
-                    )
-                    .font(.headline)
-                    .padding(.bottom)
+//                    NavigationLink("View Albums", destination: AlbumsView(
+//                        viewModel: .init(
+//                            artistID: artist.id,
+//                            imageRepository: viewModel.imageRepository,
+//                            artistRepository: viewModel.artistRepository
+//                        )
+//                    )
+//                    )
+//                    .font(.headline)
+//                    .padding(.bottom)
                     
                     if let members = viewModel.artist?.members {
                         Text("Band Members")
@@ -49,7 +50,7 @@ struct ArtistDetailView: View {
                         
                         ForEach(members, id: \.id) { member in
                             HStack {
-                                NavigationLink(destination: ArtistDetailView(viewModel: .init(artistID: member.id, imageRepository: viewModel.imageRepository, artistRepository: viewModel.artistRepository))) {
+                                NavigationLink(destination: router.push(route: .artistDetail(artistID: member.id))) {
                                     Text(member.name)
                                         .font(.headline)
                                         .padding(.vertical, 5)
