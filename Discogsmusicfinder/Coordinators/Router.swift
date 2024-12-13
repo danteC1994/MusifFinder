@@ -8,30 +8,94 @@
 import Networking
 import SwiftUI
 
-final class Router: ObservableObject {
-    private var viewFactory = ViewFactory()
-    @Published var currentView: AnyView?
+enum Route {
+    case homeView
+    case artistDetail(artistID: Int)
+}
 
-    func showHomeView() {
-        let homeView = viewFactory.makeHomeView(router: self)
-        currentView = AnyView(homeView)
+class Router: ObservableObject {
+    private var viewFactory: ViewFactory
+    @Published var navigationStack: [Route] = []
+
+    init(viewFactory: ViewFactory) {
+        self.viewFactory = viewFactory
+    }
+
+    func push(route: Route) -> some View {
+        Task {
+            await MainActor.run {
+                navigationStack.append(route)
+            }
+        }
+        return viewFactory.createView(for: route, on: self)
+    }
+
+    func pop() {
+        if !navigationStack.isEmpty {
+            navigationStack.removeLast()
+        }
     }
 }
 
 struct ViewFactory {
+    enum Environment {
+        case stage
+        case production
+    }
+
+    private let imageRepository: ImageRepository
+    private let imageManager: AsyncImageFetcher
+    private let apiClient: APIClient
+
+    init(imageRepository: ImageRepository, environment: Environment = .production) {
+        self.imageRepository = imageRepository
+        imageManager = ImageManager(imageRepository: imageRepository)
+        switch environment {
+        case .stage:
+            fatalError("Not implemented")
+        case .production:
+            apiClient = APIClientImplementation(baseURL: URL(filePath: "https://api.discogs.com"))
+        }
+    }
+
+    @ViewBuilder
+    func createView(for route: Route, on router: Router) -> some View {
+        switch route {
+        case .homeView:
+            makeHomeView(router: router)
+        case .artistDetail(artistID: let artistID):
+            makeArtistDetailsView(router: router, artistID: artistID)
+        }
+    }
+    
     func makeHomeView(router: Router) -> HomeView {
         return HomeView(
             router: router,
             viewModel: .init(
                 searchRepository: SearchRepositoryImplementation(
-                    apiClient: APIClientImplementation(
-                        baseURL: URL(
-                            filePath: "https://api.discogs.com"
-                        )
-                    )
+                    apiClient: apiClient
                 ),
-                imageRepository: ImageRepositoryImplementation()
+                imageManager: imageManager
             )
         )
+    }
+
+    func makeArtistDetailsView(router: Router, artistID: Int) -> ArtistDetailView  {
+        ArtistDetailView(
+            router: router,
+            viewModel: .init(
+                artistID: artistID,
+                imageManager: imageManager,
+                artistRepository: ArtistRepositoryImplementation(apiClient: apiClient)
+            )
+        )
+    }
+
+    func makeAlbumList() {
+        
+    }
+
+    func makeAlbumDetails() {
+        
     }
 }
