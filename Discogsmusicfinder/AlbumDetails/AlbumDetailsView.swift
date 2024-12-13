@@ -8,11 +8,68 @@
 import SwiftUI
 
 struct AlbumDetailsView: View {
+    let album: Album
+    let imageFetcher: AsyncImageFetcher
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 10) {
+                Text(album.title)
+                    .font(.largeTitle)
+                    .padding(.vertical)
+
+                Text("Artist: \(album.artist)")
+                    .font(.title2)
+                    .padding(.bottom)
+
+                if let thumb = album.thumb,let  coverImageUrl = URL(string: thumb), !thumb.isEmpty {
+                    AsyncImageView(url: coverImageUrl, fetcher: imageFetcher)
+//                        .resizable()
+//                        .scaledToFit()
+//                        .frame(height: 200)
+//                        .cornerRadius(10)
+//                        .padding(.bottom)
+                } else {
+                    Image(systemName: "photo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 200)
+                        .cornerRadius(10)
+                        .padding(.bottom)
+                        .foregroundColor(.gray)
+                }
+
+                if let albumYear = album.year {
+                    Text("Release Year: \(albumYear)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.bottom)
+                }
+
+                Text("Tracklist")
+                    .font(.title2)
+                    .padding(.top)
+
+//                ForEach(album.tracks, id: \.id) { track in
+//                    HStack {
+//                        Text(track.title)
+//                        Spacer()
+//                        Text(track.duration) // Assuming duration is a property of Track model
+//                            .font(.caption)
+//                            .foregroundColor(.secondary)
+//                    }
+//                    .padding(.vertical, 2)
+//                }
+            }
+            .padding()
+        }
+        .navigationTitle(album.title)
     }
 }
 
+
+
+
 #Preview {
-    AlbumDetailsView()
+//    AlbumDetailsView()
 }
