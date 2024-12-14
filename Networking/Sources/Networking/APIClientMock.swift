@@ -5,35 +5,21 @@
 //  Created by dante canizo on 10/12/2024.
 //
 
-final class APIClientMock: APIClient {
-    var shouldReturnError = false
+public final class APIClientMock: APIClient {
+    public var response: Decodable?
+    public var error: APIError?
 
-    func get<T>(endpoint: Endpoint, queryItems: [String : String]?, headers: [String : String]?) async throws -> T where T : Decodable {
-        guard !shouldReturnError else {
-            throw APIError.networkError("Mock response error")
+    public func get<T>(endpoint: Endpoint, queryItems: [String : String]?, headers: [String : String]?) async throws -> T where T : Decodable {
+        if let error {
+            throw error
         }
-        switch endpoint {
-        case .search:
-            fatalError("not supported")
-        case let .paginatedEndpoint(nextResult):
-            fatalError("not supported")
-        case .artist(_):
-            fatalError("not supported")
-        case .artistReleases(_):
-            fatalError("not supported")
-        }
+        return response as! T
     }
 
-    func post<T, U>(endpoint: Endpoint, body: U, queryItems: [String : String]?, headers: [String : String]?) async throws -> T where T : Decodable, U : Encodable {
-        switch endpoint {
-        case .search:
-            fatalError("not supported")
-        case .paginatedEndpoint(_):
-            fatalError("not supported")
-        case .artist(_):
-            fatalError("not supported")
-        case .artistReleases(_):
-            fatalError("not supported")
+    public func post<T, U>(endpoint: Endpoint, body: U, queryItems: [String : String]?, headers: [String : String]?) async throws -> T where T : Decodable, U : Encodable {
+        if let error {
+            throw error
         }
+        return response as! T
     }
 }
