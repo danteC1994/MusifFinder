@@ -23,7 +23,7 @@ struct AlbumResponse: Codable {
     }
 }
 
-struct Album: Codable, Identifiable {
+struct Album: Codable, Identifiable, Hashable {
     let id: Int
     let artist: String
     let title: String

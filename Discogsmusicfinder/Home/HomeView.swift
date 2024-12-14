@@ -12,13 +12,11 @@ struct HomeView: View {
     @EnvironmentObject var router: Router
     @StateObject var viewModel: HomeViewModel
     @State private var searchText = ""
-    @State private var artists: [SearchResult] = []
-    @State private var showEmptyState = true
 
     var body: some View {
         NavigationStack {
             VStack {
-                if showEmptyState {
+                if viewModel.showEmptyState {
                     emptyState
                 } else {
                     listView(viewModel.searchResults)
@@ -26,7 +24,9 @@ struct HomeView: View {
             }
             .searchable(text: $searchText, prompt: "Artist Name")
             .onChange(of: searchText) { _, newValue in
-                requestArtistIfNeeded(newValue)
+                Task {
+                    await viewModel.requestArtistIfNeeded(newValue)
+                }
             }
             .navigationTitle("Discogs Music Finder")
         }
@@ -88,18 +88,6 @@ struct HomeView: View {
                     subtitle: artist.type.capitalized
                 )
             )
-        }
-    }
-
-    private func requestArtistIfNeeded(_ newSearchValue: String) {
-        if !newSearchValue.isEmpty {
-            Task {
-                await viewModel.fetchArtists(query: newSearchValue)
-                showEmptyState = false
-            }
-        } else {
-            artists = []
-            showEmptyState = true
         }
     }
 }

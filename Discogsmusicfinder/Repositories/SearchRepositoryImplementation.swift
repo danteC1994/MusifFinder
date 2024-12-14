@@ -21,7 +21,7 @@ final class SearchRepositoryImplementation: SearchRepository {
         queryItems["type"] = "artist"
         queryItems["per_page"] = "\(pageSize)"
         queryItems["page"] = "1"
-        let response: ArtistSearchResponse = try await apiClient.get(endpoint: .search, queryItems: queryItems, headers: [:])
+        let response: SearchResponse = try await apiClient.get(endpoint: .search, queryItems: queryItems, headers: [:])
         self.artists = response.results
         self.nextLink = response.pagination.urls.next
         return artists
@@ -34,7 +34,7 @@ final class SearchRepositoryImplementation: SearchRepository {
         queryItems["type"] = "artist"
         queryItems["per_page"] = "\(pageSize)"
         queryItems["page"] = "1"
-        let response: ArtistSearchResponse = try await apiClient.get(endpoint: .paginatedEndpoint(nextLink), queryItems: [:], headers: [:])
+        let response: SearchResponse = try await apiClient.get(endpoint: .paginatedEndpoint(nextLink), queryItems: [:], headers: [:])
         self.artists.append(contentsOf: response.results)
         self.nextLink = response.pagination.urls.next
         return artists

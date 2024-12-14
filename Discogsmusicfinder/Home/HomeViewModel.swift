@@ -10,6 +10,7 @@ final class HomeViewModel: ObservableObject {
     @Published var searchResults = [SearchResult]()
     @Published var isLoading: Bool = false
     @Published var error: Bool = false
+    @Published var showEmptyState: Bool = true
 
     private let searchRepository: SearchRepository
     private(set) var imageManager: AsyncImageFetcher
@@ -43,6 +44,19 @@ final class HomeViewModel: ObservableObject {
             await MainActor.run {
                 self.error = true
                 print("Error fetching artists: \(error)")
+            }
+        }
+    }
+
+    func requestArtistIfNeeded(_ newSearchValue: String) async {
+        if !newSearchValue.isEmpty {
+            await fetchArtists(query: newSearchValue)
+            await MainActor.run {
+                showEmptyState = false
+            }
+        } else {
+            await MainActor.run {
+                showEmptyState = true
             }
         }
     }

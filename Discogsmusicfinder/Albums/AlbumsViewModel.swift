@@ -41,10 +41,22 @@ final class AlbumsViewModel: ObservableObject {
         do {
             let albums = try await artistRepository.fetchAlbums(artistID: "\(self.artistID)", sort: sort?.rawValue ?? currentSort.rawValue, sortOrder: sortOrder?.rawValue ?? SortOrder.desc.rawValue)
             await MainActor.run {
-                self.albums = albums
+                self.albums = removeDuplicateAlbums(albums: albums)
             }
         } catch {
             print("Error fetching albums: \(error)")
+        }
+    }
+
+    func removeDuplicateAlbums(albums: [Album]) -> [Album] {
+        var seen = Set<Int>()
+        return albums.filter { album in
+            if seen.contains(album.id) {
+                return false
+            } else {
+                seen.insert(album.id)
+                return true
+            }
         }
     }
 }

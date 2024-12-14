@@ -5,7 +5,7 @@
 //  Created by dante canizo on 10/12/2024.
 //
 
-struct ArtistSearchResponse: Codable {
+struct SearchResponse: Codable {
     let pagination: Pagination
     let results: [SearchResult]
 }
