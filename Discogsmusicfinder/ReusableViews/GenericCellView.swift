@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GenericCellView: View {
     struct ArtistCellViewData {
-        let imageManager: AsyncImageFetcher
+        let imageManager: ImageRepository
         let imageURLString: String?
         let title: String
         let subtitle: String
@@ -60,5 +60,5 @@ struct GenericCellView: View {
 }
 
 #Preview {
-    GenericCellView(viewData: .init(imageManager: ImageManager(imageRepository: ImageRepositoryImplementation()), imageURLString: "", title: "Any title", subtitle: "Any subtitle"))
+    GenericCellView(viewData: .init(imageManager: ImageRepositoryMock(), imageURLString: "", title: "Any title", subtitle: "Any subtitle"))
 }

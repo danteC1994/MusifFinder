@@ -15,7 +15,6 @@ struct ViewFactory {
     }
 
     private let imageRepository: ImageRepository
-    private let imageManager: AsyncImageFetcher
     private let apiClient: APIClient
     private let environment: Environment
 
@@ -25,11 +24,9 @@ struct ViewFactory {
         case .stage:
             apiClient = APIClientMock()
             self.imageRepository = ImageRepositoryMock()
-            imageManager = ImageManager(imageRepository: imageRepository)
         case .production:
             apiClient = APIClientImplementation(baseURL: URL(filePath: "https://api.discogs.com"))
             self.imageRepository = ImageRepositoryImplementation()
-            imageManager = ImageManager(imageRepository: imageRepository)
         }
     }
 
@@ -53,7 +50,7 @@ struct ViewFactory {
             return HomeView(
                 viewModel: .init(
                     searchRepository: SearchRepositoryMock(),
-                    imageManager: imageManager
+                    imageManager: imageRepository
                 )
             )
         case .production:
@@ -62,7 +59,7 @@ struct ViewFactory {
                     searchRepository: SearchRepositoryImplementation(
                         apiClient: apiClient
                     ),
-                    imageManager: imageManager
+                    imageManager: imageRepository
                 )
             )
         }
@@ -74,7 +71,7 @@ struct ViewFactory {
             ArtistDetailView(
                 viewModel: .init(
                     artistID: artistID,
-                    imageManager: imageManager,
+                    imageManager: imageRepository,
                     artistRepository: ArtistRepositoryMock()
                 )
             )
@@ -82,7 +79,7 @@ struct ViewFactory {
             ArtistDetailView(
                 viewModel: .init(
                     artistID: artistID,
-                    imageManager: imageManager,
+                    imageManager: imageRepository,
                     artistRepository: ArtistRepositoryImplementation(apiClient: apiClient)
                 )
             )
@@ -95,7 +92,7 @@ struct ViewFactory {
             AlbumsView(
                 viewModel: .init(
                     artistID: artistID,
-                    imageManager: imageManager,
+                    imageManager: imageRepository,
                     artistRepository: ArtistRepositoryMock()
                 )
             )
@@ -103,7 +100,7 @@ struct ViewFactory {
             AlbumsView(
                 viewModel: .init(
                     artistID: artistID,
-                    imageManager: imageManager,
+                    imageManager: imageRepository,
                     artistRepository: ArtistRepositoryImplementation(apiClient: apiClient)
                 )
             )
@@ -111,6 +108,6 @@ struct ViewFactory {
     }
 
     func makeAlbumDetails(album: Album) -> AlbumDetailsView {
-        AlbumDetailsView(album: album, imageManager: imageManager)
+        AlbumDetailsView(album: album, imageManager: imageRepository)
     }
 }

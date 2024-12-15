@@ -13,9 +13,9 @@ final class HomeViewModel: ObservableObject {
     @Published var showEmptyState: Bool = true
 
     private let searchRepository: SearchRepository
-    private(set) var imageManager: AsyncImageFetcher
+    private(set) var imageManager: ImageRepository
 
-    init(searchRepository: SearchRepository, imageManager: AsyncImageFetcher) {
+    init(searchRepository: SearchRepository, imageManager: ImageRepository) {
         self.searchRepository = searchRepository
         self.imageManager = imageManager
     }

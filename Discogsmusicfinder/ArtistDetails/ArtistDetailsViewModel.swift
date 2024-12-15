@@ -9,11 +9,11 @@ import SwiftUI
 
 class ArtistDetailsViewModel: ObservableObject {
     @Published private(set) var artist: Artist?
-    private(set) var imageManager: AsyncImageFetcher
+    private(set) var imageManager: ImageRepository
     private(set) var artistRepository: ArtistRepository
     private let artistID: Int
 
-    init(artistID: Int, imageManager: AsyncImageFetcher, artistRepository: ArtistRepository) {
+    init(artistID: Int, imageManager: ImageRepository, artistRepository: ArtistRepository) {
         self.imageManager = imageManager
         self.artistRepository = artistRepository
         self.artistID = artistID

@@ -13,7 +13,7 @@ final class AlbumsViewModel: ObservableObject {
     
     private let artistRepository: ArtistRepository
     private let artistID: Int
-    private(set) var imageManager: AsyncImageFetcher
+    private(set) var imageManager: ImageRepository
     
 
     enum SortField: String {
@@ -27,7 +27,7 @@ final class AlbumsViewModel: ObservableObject {
         case desc
     }
 
-    init(artistID: Int, imageManager: AsyncImageFetcher, artistRepository: ArtistRepository) {
+    init(artistID: Int, imageManager: ImageRepository, artistRepository: ArtistRepository) {
         self.imageManager = imageManager
         self.artistRepository = artistRepository
         self.artistID = artistID

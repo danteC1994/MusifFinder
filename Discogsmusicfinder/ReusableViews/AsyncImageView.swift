@@ -12,10 +12,10 @@ struct AsyncImageView: View {
     let url: URL?
     @State private var image: Image? = nil
     @State private var isLoading = true
-    private let fetcher: AsyncImageFetcher
+    private let fetcher: ImageRepository
     private let placeholder: Image
 
-    init(url: URL?, fetcher: AsyncImageFetcher, placeholder: Image = Image(systemName: "photo")) {
+    init(url: URL?, fetcher: ImageRepository, placeholder: Image = Image(systemName: "photo")) {
         self.url = url
         self.fetcher = fetcher
         self.placeholder = placeholder
@@ -67,7 +67,9 @@ struct AsyncImageView: View {
     AsyncImageView(url: URL(filePath: ""), fetcher: MockImageFetcher())
 }
 
-fileprivate struct MockImageFetcher: AsyncImageFetcher {
+fileprivate struct MockImageFetcher: ImageRepository {
+    var imageCache = [String : Image]()
+    
     func fetchImage(for url: String) async -> Image? {
         nil
     }
