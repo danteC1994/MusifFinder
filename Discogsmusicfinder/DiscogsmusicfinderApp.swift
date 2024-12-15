@@ -10,7 +10,7 @@ import Networking
 
 @main
 struct DiscogsmusicfinderApp: App {
-    @StateObject private var router = Router(viewFactory: .init(environment: .stage))
+    @StateObject private var router = Router(viewFactory: .init(environment: .production))
 
     var body: some Scene {
         WindowGroup {

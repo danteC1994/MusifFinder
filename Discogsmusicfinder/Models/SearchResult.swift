@@ -10,18 +10,6 @@ struct SearchResponse: Codable {
     let results: [SearchResult]
 }
 
-struct Pagination: Codable {
-    let page: Int
-    let pages: Int
-    let perPage: Int
-    let items: Int
-    let urls: PaginationURLs
-
-    enum CodingKeys: String, CodingKey {
-        case page, pages, perPage = "per_page", items, urls
-    }
-}
-
 struct PaginationURLs: Codable {
     let last: String
     let next: String?

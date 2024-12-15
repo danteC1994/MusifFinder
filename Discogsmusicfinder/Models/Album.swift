@@ -8,19 +8,6 @@
 struct AlbumResponse: Codable {
     let pagination: Pagination
     let releases: [Album]
-
-    struct Pagination: Codable {
-        let perPage: Int
-        let items: Int
-        let page: Int
-        let pages: Int
-        let urls: [String: String]
-
-        enum CodingKeys: String, CodingKey {
-            case perPage = "per_page"
-            case items, page, pages, urls
-        }
-    }
 }
 
 struct Album: Codable, Identifiable, Hashable {

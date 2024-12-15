@@ -6,7 +6,7 @@
 //
 
 final class ArtistTestData {
-    func getArtist() -> Artist {
+    static func getArtist() -> Artist {
         let images = [
             ArtistImage(
                 height: 300,
