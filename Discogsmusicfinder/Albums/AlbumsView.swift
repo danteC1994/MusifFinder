@@ -14,8 +14,8 @@ struct AlbumsView: View {
     
     var body: some View {
         VStack {
-            filterSection
             if let albums = viewModel.albums {
+                filterSection
                 albumList(albums)
                 
             } else {
@@ -95,7 +95,13 @@ struct AlbumsView: View {
 }
 
 #Preview {
-//    NavigationStack {
-//        AlbumsView(viewModel: .init(artistID: 1435265, imageRepository: ImageRepositoryImplementation(), artistRepository: ArtistRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "https://api.discogs.com")))))
-//    }
+    let router = Router(
+        viewFactory: .init(
+            environment: .stage
+        )
+    )
+    NavigationStack {
+        router.push(route: .albumDetails(album: AlbumTestData.getAlbums().releases.first!))
+    }
+    .environmentObject(router)
 }

@@ -6,7 +6,7 @@
 //
 
 final class AlbumTestData {
-    static func getArtist() -> AlbumResponse {
+    static func getAlbums() -> AlbumResponse {
         let releases = [
             Album(
                 id: 173765,

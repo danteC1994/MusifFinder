@@ -21,7 +21,7 @@ final class ArtistRepositoryMock: ArtistRepository {
     }
     
     func fetchAlbums(artistID: String, sort: String, sortOrder: String) async throws -> [Album] {
-        apiClient.response = AlbumTestData.getArtist()
+        apiClient.response = AlbumTestData.getAlbums()
         let response: AlbumResponse = try await apiClient.get(endpoint: .artistReleases(artistID), queryItems: nil, headers: nil)
         return response.releases
     }

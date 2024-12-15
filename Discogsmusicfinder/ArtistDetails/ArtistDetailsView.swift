@@ -21,11 +21,6 @@ struct ArtistDetailView: View {
                     
                     if let primaryImage = artist.images.first(where: { $0.type == "primary" }) {
                         AsyncImageView(url: URL(string: primaryImage.uri), fetcher: viewModel.imageManager)
-                        //                        .resizable()
-                        //                        .scaledToFit()
-                        //                        .frame(height: 200)
-                        //                        .cornerRadius(10)
-                        //                        .padding(.bottom)
                     }
                     
                     Text(artist.profile)
@@ -95,6 +90,14 @@ struct ArtistDetailView: View {
     }
 }
 
-//#Preview {
-//    ArtistDetailsView(artist: .init(id: 123, type: "artist", userData: .init(inWantlist: false, inCollection: false), uri: "https", title: "Title", thumb: "imageURL", coverImage: "ImageCover", resourceURL: ""), coverImage: nil)
-//}
+#Preview {
+    let router = Router(
+        viewFactory: .init(
+            environment: .stage
+        )
+    )
+    NavigationStack {
+        router.push(route: .artistDetail(artistID: 12345))
+    }
+    .environmentObject(router)
+}
