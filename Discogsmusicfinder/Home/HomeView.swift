@@ -93,5 +93,13 @@ struct HomeView: View {
 }
 
 #Preview {
-//    HomeView(router: Router(), viewModel: .init(searchRepository: SearchRepositoryImplementation(apiClient: APIClientImplementation(baseURL: URL(filePath: "")!)), imageManager: ImageManager(imageRepository: ImageRepositoryImplementation as! ImageRepository)))
+    let router = Router(
+        viewFactory: .init(
+            environment: .stage
+        )
+    )
+    NavigationStack {
+        router.push(route: .homeView)
+    }
+    .environmentObject(router)
 }
