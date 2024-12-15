@@ -6,7 +6,7 @@
 //
 
 final class SearchResultTestData {
-    func getArtist() -> SearchResponse {
+    static func searchArtist() -> SearchResponse {
         let results = [
             SearchResult(
                 id: 3182820,
