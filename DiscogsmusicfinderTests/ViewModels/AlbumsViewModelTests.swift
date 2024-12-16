@@ -9,7 +9,7 @@ import XCTest
 @testable import Discogsmusicfinder
 
 class AlbumsViewModelTests: XCTestCase {
-    var viewModel: AlbumsViewModel!
+    var viewModel: AlbumsListViewModel!
     var artistRepositoryMock: ArtistRepositoryMock!
     var imageRepositoryMock: ImageRepositoryMock!
     var errorHandler: GenericErrorHandler!
@@ -19,7 +19,7 @@ class AlbumsViewModelTests: XCTestCase {
         imageRepositoryMock = ImageRepositoryMock()
         errorHandler = GenericErrorHandler()
         artistRepositoryMock = ArtistRepositoryMock()
-        viewModel = AlbumsViewModel(artistID: 108713, imageManager: imageRepositoryMock, artistRepository: artistRepositoryMock, errorHandler: errorHandler)
+        viewModel = AlbumsListViewModel(artistID: 108713, imageManager: imageRepositoryMock, artistRepository: artistRepositoryMock, errorHandler: errorHandler)
     }
 
     override func tearDown() {
@@ -39,7 +39,7 @@ class AlbumsViewModelTests: XCTestCase {
 
     func test_fetchAlbums_failure() async {
         artistRepositoryMock = ArtistRepositoryMock(error: .networkError("Network error"))
-        viewModel = AlbumsViewModel(artistID: 108713, imageManager: imageRepositoryMock, artistRepository: artistRepositoryMock, errorHandler: errorHandler)
+        viewModel = AlbumsListViewModel(artistID: 108713, imageManager: imageRepositoryMock, artistRepository: artistRepositoryMock, errorHandler: errorHandler)
 
         await viewModel.fetchAlbums()
 

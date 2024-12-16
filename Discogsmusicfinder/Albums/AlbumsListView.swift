@@ -8,19 +8,23 @@
 import SwiftUI
 import Networking
 
-struct AlbumsView: View {
+struct AlbumsListView: View {
     @EnvironmentObject var router: Router
-    @StateObject var viewModel: AlbumsViewModel
+    @StateObject var viewModel: AlbumsListViewModel
     
     var body: some View {
         VStack {
-            if let error = viewModel.error {
+            if viewModel.loadingContent {
+                ProgressView()
+            } else if let error = viewModel.error {
                 errorView(error)
             } else {
                 if let albums = viewModel.albums {
                     filterSection
                     albumList(albums)
-                    
+                    if viewModel.loadingNextPage {
+                        ProgressView()
+                    }
                 } else {
                     emptyState
                 }
@@ -67,7 +71,7 @@ struct AlbumsView: View {
         .padding()
     }
 
-    private func filterButton(sortType: AlbumsViewModel.SortField) -> some View {
+    private func filterButton(sortType: AlbumsListViewModel.SortField) -> some View {
         Button(action: {
             viewModel.currentSort = sortType
             Task {
@@ -89,6 +93,13 @@ struct AlbumsView: View {
                 ForEach(albums) { album in
                     HStack {
                         albumCell(album)
+                            .onAppear {
+                                if album.id == viewModel.albums?.last?.id {
+                                    Task {
+                                        await viewModel.loadMoreAlbums()
+                                    }
+                                }
+                            }
                     }
                     .padding(.horizontal)
                 }

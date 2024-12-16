@@ -20,10 +20,15 @@ struct HomeView: View {
                     errorView(error)
                 } else {
                     VStack {
-                        if viewModel.showEmptyState {
+                        if viewModel.loadingContent {
+                            ProgressView()
+                        } else if viewModel.showEmptyState {
                             emptyState
                         } else {
                             listView(viewModel.searchResults)
+                            if viewModel.loadingNextPage {
+                                ProgressView()
+                            }
                         }
                     }
                     .searchable(text: $searchText, prompt: "Artist Name")

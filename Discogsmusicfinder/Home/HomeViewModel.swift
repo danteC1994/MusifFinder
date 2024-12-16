@@ -10,9 +10,10 @@ import SwiftUI
 
 final class HomeViewModel: ObservableObject {
     @Published var searchResults = [SearchResult]()
-    @Published var isLoading: Bool = false
     @Published var showEmptyState: Bool = true
     @Published private(set) var error: UIError?
+    @Published private(set) var loadingNextPage: Bool = false
+    @Published private(set) var loadingContent: Bool = false
     private(set) var imageManager: ImageRepository
     private(set) var lastQuery: String = ""
     private let searchRepository: SearchRepository
@@ -26,9 +27,11 @@ final class HomeViewModel: ObservableObject {
 
     @MainActor
     func fetchArtists(query: String) async {
+        loadingContent = true
+        defer { loadingContent = false }
         do {
             let searchResults = try await searchRepository.searchArtists(query: query, pageSize: 30)
-            self.searchResults = searchResults
+            self.searchResults = removeDuplicateItems(items: searchResults)
             self.error = nil
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
@@ -38,9 +41,11 @@ final class HomeViewModel: ObservableObject {
 
     @MainActor
     func loadMoreArtists(query: String) async {
+        loadingNextPage = true
+        defer { loadingNextPage = false }
         do {
-            let searchResults = try await searchRepository.loadNextPage(query: query, pageSize: 30)
-            self.searchResults = searchResults
+            let searchResults = try await searchRepository.loadNextPage()
+            self.searchResults = removeDuplicateItems(items: searchResults)
             self.error = nil
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
@@ -67,6 +72,18 @@ final class HomeViewModel: ObservableObject {
         case .nonRecoverableError:
             self.searchResults = []
             self.error = nil
+        }
+    }
+
+    func removeDuplicateItems(items: [SearchResult]) -> [SearchResult] {
+        var seen = Set<Int>()
+        return items.filter { album in
+            if seen.contains(album.id) {
+                return false
+            } else {
+                seen.insert(album.id)
+                return true
+            }
         }
     }
 }

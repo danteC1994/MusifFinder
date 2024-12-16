@@ -90,10 +90,10 @@ struct ViewFactory {
         }
     }
 
-    func makeAlbumList(artistID: Int) -> AlbumsView {
+    func makeAlbumList(artistID: Int) -> AlbumsListView {
         switch environment {
         case .stage:
-            AlbumsView(
+            AlbumsListView(
                 viewModel: .init(
                     artistID: artistID,
                     imageManager: imageRepository,
@@ -102,7 +102,7 @@ struct ViewFactory {
                 )
             )
         case .production:
-            AlbumsView(
+            AlbumsListView(
                 viewModel: .init(
                     artistID: artistID,
                     imageManager: imageRepository,

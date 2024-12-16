@@ -11,7 +11,7 @@ struct SearchResponse: Codable {
 }
 
 struct PaginationURLs: Codable {
-    let last: String
+    let last: String?
     let next: String?
 }
 

@@ -8,10 +8,12 @@
 import SwiftUI
 import Networking
 
-final class AlbumsViewModel: ObservableObject {
-    @Published private(set) var albums: [Album]?
+final class AlbumsListViewModel: ObservableObject {
     @Published var currentSort: SortField = .year
+    @Published private(set) var albums: [Album]?
     @Published private(set) var error: UIError?
+    @Published private(set) var loadingNextPage: Bool = false
+    @Published private(set) var loadingContent: Bool = false
     
     private let artistRepository: ArtistRepository
     private let artistID: Int
@@ -43,12 +45,28 @@ final class AlbumsViewModel: ObservableObject {
 
     @MainActor
     func fetchAlbums(sort: SortField? = nil, sortOrder: SortOrder? = nil) async {
+        loadingContent = true
+        defer { loadingContent = false }
         do {
             let albums = try await artistRepository.fetchAlbums(
                 artistID: "\(self.artistID)",
                 sort: sort?.rawValue ?? currentSort.rawValue,
-                sortOrder: sortOrder?.rawValue ?? SortOrder.desc.rawValue
+                sortOrder: sortOrder?.rawValue ?? SortOrder.desc.rawValue,
+                pageSize: 30
             )
+            self.albums = removeDuplicateAlbums(albums: albums)
+            self.error = nil
+        } catch {
+            self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
+        }
+    }
+
+    @MainActor
+    func loadMoreAlbums() async {
+        loadingNextPage = true
+        defer { loadingNextPage = false }
+        do {
+            let albums = try await artistRepository.loadNextAlbumsPage()
             self.albums = removeDuplicateAlbums(albums: albums)
             self.error = nil
         } catch {

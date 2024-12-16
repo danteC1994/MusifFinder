@@ -27,13 +27,9 @@ final class SearchRepositoryImplementation: SearchRepository {
         return artists
     }
 
-    func loadNextPage(query: String, pageSize: Int) async throws -> [SearchResult] {
-        guard let nextLink = nextLink else { throw APIError.invalidURL }
+    func loadNextPage() async throws -> [SearchResult] {
+        guard let nextLink = nextLink else { return artists }
 
-        var queryItems: [String: String] = ["q": query]
-        queryItems["type"] = "artist"
-        queryItems["per_page"] = "\(pageSize)"
-        queryItems["page"] = "1"
         let response: SearchResponse = try await apiClient.get(endpoint: .paginatedEndpoint(nextLink), queryItems: [:], headers: [:])
         self.artists.append(contentsOf: response.results)
         self.nextLink = response.pagination.urls.next

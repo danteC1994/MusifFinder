@@ -7,5 +7,6 @@
 
 protocol ArtistRepository {
     func fetchArtist(artistID: String) async throws -> Artist
-    func fetchAlbums(artistID: String, sort: String, sortOrder: String) async throws -> [Album]
+    func fetchAlbums(artistID: String, sort: String, sortOrder: String, pageSize: Int) async throws -> [Album]
+    func loadNextAlbumsPage() async throws -> [Album]
 }

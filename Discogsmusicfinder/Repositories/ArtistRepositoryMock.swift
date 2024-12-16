@@ -24,10 +24,20 @@ final class ArtistRepositoryMock: ArtistRepository {
         }
     }
     
-    func fetchAlbums(artistID: String, sort: String, sortOrder: String) async throws -> [Album] {
+    func fetchAlbums(artistID: String, sort: String, sortOrder: String, pageSize: Int) async throws -> [Album] {
         do {
             apiClient.response = AlbumTestData.getAlbums()
             let response: AlbumResponse = try await apiClient.get(endpoint: .artistReleases(artistID), queryItems: nil, headers: nil)
+            return response.releases
+        } catch {
+            throw error
+        }
+    }
+
+    func loadNextAlbumsPage() async throws -> [Album] {
+        do {
+            apiClient.response = AlbumTestData.getAlbums()
+            let response: AlbumResponse = try await apiClient.get(endpoint: .paginatedEndpoint(""), queryItems: nil, headers: nil)
             return response.releases
         } catch {
             throw error

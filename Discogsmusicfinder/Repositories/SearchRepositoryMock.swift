@@ -26,7 +26,7 @@ final class SearchRepositoryMock: SearchRepository {
         }
     }
     
-    func loadNextPage(query: String, pageSize: Int) async throws -> [SearchResult] {
+    func loadNextPage() async throws -> [SearchResult] {
         do {
             apiClient.response = SearchResultTestData.searchArtist()
             let response: SearchResponse = try await apiClient.get(endpoint: .search, queryItems: nil, headers: nil)
