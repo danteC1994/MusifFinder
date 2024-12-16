@@ -8,18 +8,13 @@
 import Networking
 import SwiftUI
 
-enum UIError: Error {
-    case recoverableError(title: String, description: String, actionTitle: String)
-    case nonRecoverableError(title: String, description: String, actionTitle: String)
-}
-
 final class HomeViewModel: ObservableObject {
     @Published var searchResults = [SearchResult]()
     @Published var isLoading: Bool = false
     @Published var showEmptyState: Bool = true
     @Published private(set) var error: UIError?
     private(set) var imageManager: ImageRepository
-    private var lastQuery: String = ""
+    private(set) var lastQuery: String = ""
     private let searchRepository: SearchRepository
     private let errorHandler: ErrorHandler
 
@@ -33,37 +28,31 @@ final class HomeViewModel: ObservableObject {
     func fetchArtists(query: String) async {
         do {
             let searchResults = try await searchRepository.searchArtists(query: query, pageSize: 30)
-            await MainActor.run {
-                self.searchResults = searchResults
-            }
+            self.searchResults = searchResults
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
         }
         lastQuery = query
     }
 
+    @MainActor
     func loadMoreArtists(query: String) async {
         do {
             let searchResults = try await searchRepository.loadNextPage(query: query, pageSize: 30)
-            await MainActor.run {
-                self.searchResults = searchResults
-            }
+            self.searchResults = searchResults
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
         }
         lastQuery = query
     }
 
+    @MainActor
     func requestArtistIfNeeded(_ newSearchValue: String) async {
         if !newSearchValue.isEmpty {
             await fetchArtists(query: newSearchValue)
-            await MainActor.run {
-                showEmptyState = false
-            }
+            showEmptyState = false
         } else {
-            await MainActor.run {
-                showEmptyState = true
-            }
+            showEmptyState = true
         }
     }
 
