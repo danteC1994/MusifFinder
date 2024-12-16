@@ -14,17 +14,46 @@ struct AlbumsView: View {
     
     var body: some View {
         VStack {
-            if let albums = viewModel.albums {
-                filterSection
-                albumList(albums)
-                
+            if let error = viewModel.error {
+                errorView(error)
             } else {
-                emptyState
+                if let albums = viewModel.albums {
+                    filterSection
+                    albumList(albums)
+                    
+                } else {
+                    emptyState
+                }
             }
         }
         .navigationTitle("Albums")
         .task {
             await viewModel.fetchAlbums()
+        }
+    }
+
+    private func errorView(_ error: UIError) -> some View {
+        switch error {
+        case .recoverableError(title: let title, description: let description, actionTitle: let actionTitle):
+            GenericErrorView(
+                title: title,
+                description: description,
+                actionTitle: actionTitle,
+                action: {
+                    Task {
+                        await viewModel.fetchAlbums()
+                    }
+                }
+            )
+        case .nonRecoverableError(title: let title, description: let description, actionTitle: let actionTitle):
+            GenericErrorView(
+                title: title,
+                description: description,
+                actionTitle: actionTitle,
+                action: {
+                    router.pop()
+                }
+            )
         }
     }
 
@@ -101,7 +130,7 @@ struct AlbumsView: View {
         )
     )
     NavigationStack {
-        router.push(route: .albumDetails(album: AlbumTestData.getAlbums().releases.first!))
+        router.push(route: .albumsList(artistID: 12345))
     }
     .environmentObject(router)
 }

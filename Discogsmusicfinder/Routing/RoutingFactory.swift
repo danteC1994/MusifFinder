@@ -97,7 +97,8 @@ struct ViewFactory {
                 viewModel: .init(
                     artistID: artistID,
                     imageManager: imageRepository,
-                    artistRepository: ArtistRepositoryMock()
+                    artistRepository: ArtistRepositoryMock(),
+                    errorHandler: GenericErrorHandler()
                 )
             )
         case .production:
@@ -105,7 +106,8 @@ struct ViewFactory {
                 viewModel: .init(
                     artistID: artistID,
                     imageManager: imageRepository,
-                    artistRepository: ArtistRepositoryImplementation(apiClient: apiClient)
+                    artistRepository: ArtistRepositoryImplementation(apiClient: apiClient),
+                    errorHandler: GenericErrorHandler()
                 )
             )
         }

@@ -18,11 +18,10 @@ final class HomeViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var showEmptyState: Bool = true
     @Published private(set) var error: UIError?
+    private(set) var imageManager: ImageRepository
     private var lastQuery: String = ""
-
     private let searchRepository: SearchRepository
     private let errorHandler: ErrorHandler
-    private(set) var imageManager: ImageRepository
 
     init(searchRepository: SearchRepository, imageManager: ImageRepository, errorHandler: ErrorHandler) {
         self.searchRepository = searchRepository

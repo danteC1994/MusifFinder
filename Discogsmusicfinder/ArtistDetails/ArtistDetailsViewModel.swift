@@ -10,11 +10,11 @@ import Networking
 
 class ArtistDetailsViewModel: ObservableObject {
     @Published private(set) var artist: Artist?
+    @Published private(set) var error: UIError?
     private(set) var imageManager: ImageRepository
     private(set) var artistRepository: ArtistRepository
     private let errorHandler: ErrorHandler
     private let artistID: Int
-    @Published private(set) var error: UIError?
 
     init(artistID: Int, imageManager: ImageRepository, artistRepository: ArtistRepository, errorHandler: ErrorHandler) {
         self.imageManager = imageManager

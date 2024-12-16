@@ -49,7 +49,7 @@ struct AlbumDetailsView: View {
 //                    HStack {
 //                        Text(track.title)
 //                        Spacer()
-//                        Text(track.duration) // Assuming duration is a property of Track model
+//                        Text(track.duration)
 //                            .font(.caption)
 //                            .foregroundColor(.secondary)
 //                    }
@@ -66,5 +66,13 @@ struct AlbumDetailsView: View {
 
 
 #Preview {
-//    AlbumDetailsView()
+    let router = Router(
+        viewFactory: .init(
+            environment: .stage
+        )
+    )
+    NavigationStack {
+        router.push(route: .albumDetails(album: AlbumTestData.getAlbums().releases.first!))
+    }
+    .environmentObject(router)
 }
