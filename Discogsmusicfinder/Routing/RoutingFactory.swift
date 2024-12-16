@@ -31,7 +31,7 @@ struct ViewFactory {
     }
 
     @ViewBuilder
-    func createView(for route: Route, on router: Router) -> some View {
+    func createView(for route: Route) -> some View {
         switch route {
         case .homeView:
             makeHomeView()
@@ -74,7 +74,8 @@ struct ViewFactory {
                 viewModel: .init(
                     artistID: artistID,
                     imageManager: imageRepository,
-                    artistRepository: ArtistRepositoryMock()
+                    artistRepository: ArtistRepositoryMock(),
+                    errorHandler: GenericErrorHandler()
                 )
             )
         case .production:
@@ -82,7 +83,8 @@ struct ViewFactory {
                 viewModel: .init(
                     artistID: artistID,
                     imageManager: imageRepository,
-                    artistRepository: ArtistRepositoryImplementation(apiClient: apiClient)
+                    artistRepository: ArtistRepositoryImplementation(apiClient: apiClient),
+                    errorHandler: GenericErrorHandler()
                 )
             )
         }

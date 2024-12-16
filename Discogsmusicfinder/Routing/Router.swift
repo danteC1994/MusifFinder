@@ -8,7 +8,7 @@
 import Networking
 import SwiftUI
 
-enum Route {
+enum Route: Equatable {
     case homeView
     case artistDetail(artistID: Int)
     case albumsList(artistID: Int)
@@ -24,12 +24,7 @@ class Router: ObservableObject {
     }
 
     func push(route: Route) -> some View {
-        Task {
-            await MainActor.run {
-                navigationStack.append(route)
-            }
-        }
-        return viewFactory.createView(for: route, on: self)
+        return viewFactory.createView(for: route)
     }
 
     func pop() {

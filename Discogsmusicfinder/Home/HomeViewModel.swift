@@ -17,7 +17,7 @@ final class HomeViewModel: ObservableObject {
     @Published var searchResults = [SearchResult]()
     @Published var isLoading: Bool = false
     @Published var showEmptyState: Bool = true
-    private(set) var error: UIError?
+    @Published private(set) var error: UIError?
     private var lastQuery: String = ""
 
     private let searchRepository: SearchRepository

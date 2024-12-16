@@ -12,7 +12,9 @@ struct ArtistDetailView: View {
     @StateObject var viewModel: ArtistDetailsViewModel
 
     var body: some View {
-         if let artist = viewModel.artist {
+        if let error = viewModel.error {
+            errorView(error)
+        } else if let artist = viewModel.artist {
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
                     Text(artist.namevariations?.first ?? artist.profile)
@@ -86,6 +88,31 @@ struct ArtistDetailView: View {
                 .task {
                     await viewModel.fetchArtist()
                 }
+        }
+    }
+
+    private func errorView(_ error: UIError) -> some View {
+        switch error {
+        case .recoverableError(title: let title, description: let description, actionTitle: let actionTitle):
+            GenericErrorView(
+                title: title,
+                description: description,
+                actionTitle: actionTitle,
+                action: {
+                    Task {
+                        await viewModel.fetchArtist()
+                    }
+                }
+            )
+        case .nonRecoverableError(title: let title, description: let description, actionTitle: let actionTitle):
+            GenericErrorView(
+                title: title,
+                description: description,
+                actionTitle: actionTitle,
+                action: {
+                    router.pop()
+                }
+            )
         }
     }
 }
