@@ -41,20 +41,10 @@ struct AlbumDetailsView: View {
                         .padding(.bottom)
                 }
 
+                // TODO: Add tracklist
                 Text("Tracklist")
                     .font(.title2)
                     .padding(.top)
-
-//                ForEach(album.tracks, id: \.id) { track in
-//                    HStack {
-//                        Text(track.title)
-//                        Spacer()
-//                        Text(track.duration)
-//                            .font(.caption)
-//                            .foregroundColor(.secondary)
-//                    }
-//                    .padding(.vertical, 2)
-//                }
             }
             .padding()
         }

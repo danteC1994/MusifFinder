@@ -36,6 +36,7 @@ class HomeViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.searchResults.isEmpty)
         XCTAssertEqual(viewModel.searchResults.first?.title, "A (26)")
         XCTAssertEqual(viewModel.lastQuery, "Nickelback")
+        XCTAssertFalse(viewModel.loadingContent)
     }
 
     func test_fetchArtists_withFailureResponse() async {
@@ -43,8 +44,28 @@ class HomeViewModelTests: XCTestCase {
         
         await viewModel.fetchArtists(query: "Nickelback")
         
-        XCTAssertNotNil(viewModel.error, "Error should be set when fetching artists fails")
+        XCTAssertNotNil(viewModel.error)
         XCTAssertEqual(viewModel.lastQuery, "Nickelback")
+        XCTAssertFalse(viewModel.loadingContent)
+    }
+
+    func test_loadMoreArtists_withSuccessResponse() async {
+        await viewModel.loadMoreArtists(query: "Nickelback")
+        
+        XCTAssertFalse(viewModel.searchResults.isEmpty)
+        XCTAssertEqual(viewModel.searchResults.first?.title, "A (26)")
+        XCTAssertEqual(viewModel.lastQuery, "Nickelback")
+        XCTAssertFalse(viewModel.loadingNextPage)
+    }
+
+    func test_loadMoreArtists_withFailureResponse() async {
+        searchRepositoryMock.apiClient.error = .networkError("Network error")
+        
+        await viewModel.loadMoreArtists(query: "Nickelback")
+        
+        XCTAssertNotNil(viewModel.error)
+        XCTAssertEqual(viewModel.lastQuery, "Nickelback")
+        XCTAssertFalse(viewModel.loadingNextPage)
     }
 
     func test_RequestArtistIfNeeded_withNonEmptyQuery() async {

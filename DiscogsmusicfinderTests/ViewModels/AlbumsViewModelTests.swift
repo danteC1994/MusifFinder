@@ -35,6 +35,7 @@ class AlbumsViewModelTests: XCTestCase {
 
         XCTAssertNotNil(viewModel.albums)
         XCTAssertEqual(viewModel.albums?.count, 2)
+        XCTAssertFalse(viewModel.loadingContent)
     }
 
     func test_fetchAlbums_failure() async {
@@ -44,18 +45,24 @@ class AlbumsViewModelTests: XCTestCase {
         await viewModel.fetchAlbums()
 
         XCTAssertNotNil(viewModel.error)
+        XCTAssertFalse(viewModel.loadingContent)
     }
 
-    func test_removeDuplicateAlbums() {
-        let album1 = Album(id: 1, artist: "Artist", title: "Album One", year: 2020, resourceURL: "", role: "", mainRelease: 1, thumb: "", type: "")
-        let album2 = Album(id: 1, artist: "Artist", title: "Album One", year: 2020, resourceURL: "", role: "", mainRelease: 2, thumb: "", type: "")
-        let album3 = Album(id: 2, artist: "Artist", title: "Album Two", year: 2021, resourceURL: "", role: "", mainRelease: 3, thumb: "", type: "")
+    func test_loadMoreAlbums_success() async {
+        await viewModel.loadMoreAlbums()
 
-        let albumsInput = [album1, album2, album3]
-        let uniqueAlbums = viewModel.removeDuplicateAlbums(albums: albumsInput)
+        XCTAssertNotNil(viewModel.albums)
+        XCTAssertEqual(viewModel.albums?.count, 2)
+        XCTAssertFalse(viewModel.loadingNextPage)
+    }
 
-        XCTAssertEqual(uniqueAlbums.count, 2)
-        XCTAssertTrue(uniqueAlbums.contains(where: { $0.id == album1.id }))
-        XCTAssertTrue(uniqueAlbums.contains(where: { $0.id == album3.id }))
+    func test_loadMoreAlbums_failure() async {
+        artistRepositoryMock = ArtistRepositoryMock(error: .networkError("Network error"))
+        viewModel = AlbumsListViewModel(artistID: 108713, imageManager: imageRepositoryMock, artistRepository: artistRepositoryMock, errorHandler: errorHandler)
+
+        await viewModel.loadMoreAlbums()
+
+        XCTAssertNotNil(viewModel.error)
+        XCTAssertFalse(viewModel.loadingNextPage)
     }
 }

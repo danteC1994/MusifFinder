@@ -54,7 +54,7 @@ final class AlbumsListViewModel: ObservableObject {
                 sortOrder: sortOrder?.rawValue ?? SortOrder.desc.rawValue,
                 pageSize: 30
             )
-            self.albums = removeDuplicateAlbums(albums: albums)
+            self.albums = albums.removeDuplicateItems()
             self.error = nil
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
@@ -67,22 +67,10 @@ final class AlbumsListViewModel: ObservableObject {
         defer { loadingNextPage = false }
         do {
             let albums = try await artistRepository.loadNextAlbumsPage()
-            self.albums = removeDuplicateAlbums(albums: albums)
+            self.albums = albums.removeDuplicateItems()
             self.error = nil
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
-        }
-    }
-
-    func removeDuplicateAlbums(albums: [Album]) -> [Album] {
-        var seen = Set<Int>()
-        return albums.filter { album in
-            if seen.contains(album.id) {
-                return false
-            } else {
-                seen.insert(album.id)
-                return true
-            }
         }
     }
 }
