@@ -50,7 +50,8 @@ struct ViewFactory {
             return HomeView(
                 viewModel: .init(
                     searchRepository: SearchRepositoryMock(),
-                    imageManager: imageRepository
+                    imageManager: imageRepository,
+                    errorHandler: GenericErrorHandler()
                 )
             )
         case .production:
@@ -59,7 +60,8 @@ struct ViewFactory {
                     searchRepository: SearchRepositoryImplementation(
                         apiClient: apiClient
                     ),
-                    imageManager: imageRepository
+                    imageManager: imageRepository,
+                    errorHandler: GenericErrorHandler()
                 )
             )
         }

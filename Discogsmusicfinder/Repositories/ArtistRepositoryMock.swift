@@ -16,13 +16,21 @@ final class ArtistRepositoryMock: ArtistRepository {
     }
 
     func fetchArtist(artistID: String) async throws -> Artist {
-        apiClient.response = ArtistTestData.getArtist()
-        return try await apiClient.get(endpoint: .artist(artistID), queryItems: nil, headers: nil)
+        do {
+            apiClient.response = ArtistTestData.getArtist()
+            return try await apiClient.get(endpoint: .artist(artistID), queryItems: nil, headers: nil)
+        } catch {
+            throw error
+        }
     }
     
     func fetchAlbums(artistID: String, sort: String, sortOrder: String) async throws -> [Album] {
-        apiClient.response = AlbumTestData.getAlbums()
-        let response: AlbumResponse = try await apiClient.get(endpoint: .artistReleases(artistID), queryItems: nil, headers: nil)
-        return response.releases
+        do {
+            apiClient.response = AlbumTestData.getAlbums()
+            let response: AlbumResponse = try await apiClient.get(endpoint: .artistReleases(artistID), queryItems: nil, headers: nil)
+            return response.releases
+        } catch {
+            throw error
+        }
     }
 }

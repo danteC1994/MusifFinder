@@ -16,16 +16,22 @@ struct HomeView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                if viewModel.showEmptyState {
-                    emptyState
+                if let error = viewModel.error {
+                    errorView(error)
                 } else {
-                    listView(viewModel.searchResults)
-                }
-            }
-            .searchable(text: $searchText, prompt: "Artist Name")
-            .onChange(of: searchText) { _, newValue in
-                Task {
-                    await viewModel.requestArtistIfNeeded(newValue)
+                    VStack {
+                        if viewModel.showEmptyState {
+                            emptyState
+                        } else {
+                            listView(viewModel.searchResults)
+                        }
+                    }
+                    .searchable(text: $searchText, prompt: "Artist Name")
+                    .onChange(of: searchText) { _, newValue in
+                        Task {
+                            await viewModel.requestArtistIfNeeded(newValue)
+                        }
+                    }
                 }
             }
             .navigationTitle("Discogs Music Finder")
@@ -49,6 +55,33 @@ struct HomeView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
+        }
+    }
+
+    private func errorView(_ error: UIError) -> some View {
+        switch error {
+        case .recoverableError(title: let title, description: let description, actionTitle: let actionTitle):
+            GenericErrorView(
+                title: title,
+                description: description,
+                actionTitle: actionTitle,
+                action: {
+                    Task {
+                        await viewModel.tryRecoverFromError(error)
+                    }
+                }
+            )
+        case .nonRecoverableError(title: let title, description: let description, actionTitle: let actionTitle):
+            GenericErrorView(
+                title: title,
+                description: description,
+                actionTitle: actionTitle,
+                action: {
+                    Task {
+                        await viewModel.tryRecoverFromError(error)
+                    }
+                }
+            )
         }
     }
 
