@@ -50,6 +50,7 @@ final class AlbumsViewModel: ObservableObject {
                 sortOrder: sortOrder?.rawValue ?? SortOrder.desc.rawValue
             )
             self.albums = removeDuplicateAlbums(albums: albums)
+            self.error = nil
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
         }

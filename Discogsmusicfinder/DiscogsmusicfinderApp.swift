@@ -14,10 +14,21 @@ struct DiscogsmusicfinderApp: App {
 
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            if ProcessInfo.processInfo.environment["XCInjectBundleInto"] != nil {
+                EmptyView()
+            } else {
+                NavigationStack {
+                    router.push(route: .homeView)
+                        .environmentObject(router)
+                }
+            }
+            #else
             NavigationStack {
                 router.push(route: .homeView)
                     .environmentObject(router)
             }
+            #endif
         }
     }
 }

@@ -27,9 +27,8 @@ class ArtistDetailsViewModel: ObservableObject {
     func fetchArtist(artistID: String? = nil) async {
         do {
             let artist = try await artistRepository.fetchArtist(artistID: artistID ?? "\(self.artistID)")
-            await MainActor.run {
-                self.artist = artist
-            }
+            self.artist = artist
+            self.error = nil
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
         }

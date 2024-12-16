@@ -29,6 +29,7 @@ final class HomeViewModel: ObservableObject {
         do {
             let searchResults = try await searchRepository.searchArtists(query: query, pageSize: 30)
             self.searchResults = searchResults
+            self.error = nil
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
         }
@@ -40,6 +41,7 @@ final class HomeViewModel: ObservableObject {
         do {
             let searchResults = try await searchRepository.loadNextPage(query: query, pageSize: 30)
             self.searchResults = searchResults
+            self.error = nil
         } catch {
             self.error = errorHandler.handle(error: error as? APIError ?? .unknownError)
         }
