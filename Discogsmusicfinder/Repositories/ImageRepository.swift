@@ -8,7 +8,5 @@
 import SwiftUI
 
 protocol ImageRepository {
-    var imageCache: [String: Image] { get }
-
     func fetchImage(for url: String) async -> Image?
 }

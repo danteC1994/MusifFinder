@@ -11,6 +11,13 @@ final class ImageRepositoryMock: ImageRepository {
     var imageCache: [String : Image] = [:]
     
     func fetchImage(for url: String) async -> Image? {
-        nil
+        switch url {
+        case "https://example.com/thumb1.png":
+            return Image(systemName: "person.fill")
+        case "https://example.com/thumb2.png":
+            return Image(systemName: "music.note")
+        default:
+            return nil
+        }
     }
 }

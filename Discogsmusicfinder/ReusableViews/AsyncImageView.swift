@@ -64,13 +64,6 @@ struct AsyncImageView: View {
 }
 
 #Preview {
-    AsyncImageView(url: URL(filePath: ""), fetcher: MockImageFetcher())
-}
-
-fileprivate struct MockImageFetcher: ImageRepository {
-    var imageCache = [String : Image]()
-    
-    func fetchImage(for url: String) async -> Image? {
-        nil
-    }
+    AsyncImageView(url: URL(filePath: ""), fetcher: ImageRepositoryMock())
+        .frame(width: 50, height: 50)
 }

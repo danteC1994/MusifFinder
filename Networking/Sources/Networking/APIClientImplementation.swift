@@ -68,7 +68,11 @@ public class APIClientImplementation: APIClient {
         }
         
 
-        let (data, _) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+            throw APIError.networkError(response.description)
+        }
 
         do {
             let decodedResponse = try JSONDecoder().decode(T.self, from: data)
