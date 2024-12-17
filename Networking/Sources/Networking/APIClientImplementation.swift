@@ -12,11 +12,22 @@ public class APIClientImplementation: APIClient {
     private let authorization: String
     private let userAgent: String
 
-    public init(baseURL: URL, authorization: String? = nil, userAgent: String? = nil) {
+    public init(baseURL: URL, userAgent: String? = nil) {
         self.baseURL = baseURL
-        self.authorization = authorization ?? "Discogs token=aroChhXXzTTJQRrjQghirwbxFpuWyPxEEDDjYbbf"
-        self.userAgent = userAgent ?? "DiscogsMusicFinder/1.0 +http://www.discogsmusicfinder.com"
-        ["Authorization": "Discogs token=aroChhXXzTTJQRrjQghirwbxFpuWyPxEEDDjYbbf", "User-Agent": "DiscogsMusicFinder/1.0 +http://www.discogsmusicfinder.com"]
+        guard let apiToken = ProcessInfo.processInfo.environment["DISCOGS_API_TOKEN"] else {
+            assertionFailure("Set up your toke properly. Follow instruction here: https://github.com/danteC1994/MusifFinder")
+            self.authorization = ""
+            self.userAgent = ""
+            return
+        }
+        guard let userAgent = ProcessInfo.processInfo.environment["DISCOGS_USER_AGENT"] else {
+            assertionFailure("Set up your user agent properly. Follow instruction here: https://github.com/danteC1994/MusifFinder")
+            self.authorization = ""
+            self.userAgent = ""
+            return
+        }
+        self.authorization = apiToken
+        self.userAgent = userAgent
     }
 
     private func buildURL(endpoint: Endpoint, queryItems: [String: String]?) -> URL? {
@@ -67,7 +78,7 @@ public class APIClientImplementation: APIClient {
         }
     }
 
-    public func post<T: Decodable, U: Encodable>(endpoint: Endpoint, body: U, queryItems: [String: String]? = nil, headers: [String: String]? = ["Authorization": "Discogs token=aroChhXXzTTJQRrjQghirwbxFpuWyPxEEDDjYbbf", "User-Agent": "DiscogsMusicFinder/1.0 +http://www.discogsmusicfinder.com"]) async throws -> T {
+    public func post<T: Decodable, U: Encodable>(endpoint: Endpoint, body: U, queryItems: [String: String]? = nil, headers: [String: String]? = nil) async throws -> T {
         guard let url = buildURL(endpoint: endpoint, queryItems: queryItems) else {
             throw APIError.invalidURL
         }
